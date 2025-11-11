@@ -1,0 +1,51 @@
+name: balesuk
+description: Offline-first mobile POS application for sales and inventory tracking
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State Management
+  flutter_riverpod: ^2.4.9
+
+  # Database - Isar (fast NoSQL)
+  isar: ^3.1.0+1
+  isar_flutter_libs: ^3.1.0+1
+  path_provider: ^2.1.1
+
+  # Navigation
+  go_router: ^13.0.0
+
+  # Bluetooth & WiFi
+  flutter_blue_plus: ^1.14.0
+  wifi_iot: ^0.3.18
+  permission_handler: ^11.0.1
+
+  # Utilities
+  intl: ^0.19.0
+  uuid: ^4.2.1
+  shared_preferences: ^2.2.2
+
+  # UI
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+  # Isar code generation
+  isar_generator: ^3.1.0+1
+  build_runner: ^2.4.7
+
+flutter:
+  uses-material-design: true
+
+  # assets:
+  #   - assets/images/
+  #   - assets/icons/

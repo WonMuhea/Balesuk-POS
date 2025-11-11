@@ -1,0 +1,12 @@
+{
+"@@locale": "en",
+"app_title": "ShopTracker",
+"role_admin": "Admin",
+"role_user": "Seller",
+"menu_sales": "Sales",
+"menu_catalog": "Catalog",
+"menu_sync": "Send to Admin",
+"menu_settings": "Settings",
+"language": "Language",
+"welcome": "Welcome"
+}
