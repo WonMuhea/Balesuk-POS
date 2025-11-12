@@ -364,6 +364,29 @@ class AppStrings {
   static String get date => _translate(am: 'ቀን', en: 'Date');
   static String get time => _translate(am: 'ሰዓት', en: 'Time');
 
+  // Additional localization strings to add to app_strings.dart
+// Add these to the AppStrings class in lib/core/localization/app_strings.dart
+
+  // Transaction
+  static String get completeTransaction => _translate(
+    am: 'ግብይቱን አጠናቅቅ',
+    en: 'Complete Transaction',
+  );
+  
+  static String get items => _translate(am: 'እቃዎች', en: 'Items');
+  
+  // General actions
+  static String get remove => _translate(am: 'አስወግድ', en: 'Remove');
+  static String get confirm => _translate(am: 'አረጋግጥ', en: 'Confirm');
+  
+  
+  static String get transactionCompleted => _translate(
+    am: 'ግብይቱ በተሳካ ሁኔታ ተጠናቀቀ',
+    en: 'Transaction completed successfully',
+  );
+
+
+
   // ==================== PRIVATE HELPER ====================
   
   static String _translate({
@@ -383,6 +406,21 @@ class AppStrings {
         return or ?? am; // Fallback to Amharic if Oromo not provided
     }
   }
+
+  // Add these localization strings to lib/core/localization/app_strings.dart
+
+// ==================== SETUP & MODE SELECTION ====================
+
+
+
+
+static String get completeSetup => _translate(
+  am: 'ማዋቀሩን አጠናቅቅ',
+  en: 'Complete Setup',
+);
+
+
+  
 }
 
 // ==================== LANGUAGE ENUM ====================

@@ -108,24 +108,24 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       
       // ==================== HOME ROUTES ====================
-      GoRoute(
+      /* GoRoute(
         path: AppRoutes.adminHome,
         name: 'admin-home',
         builder: (context, state) => const AdminHomeScreen(),
-      ),
-      GoRoute(
+      ), */
+      /* GoRoute(
         path: AppRoutes.userHome,
         name: 'user-home',
         builder: (context, state) => const UserHomeScreen(),
       ),
-      
+       */
       // ==================== SHOP ROUTES ====================
-      GoRoute(
+     /*  GoRoute(
         path: AppRoutes.openShop,
         name: 'open-shop',
         builder: (context, state) => const OpenShopScreen(),
       ),
-      
+       */
       // ==================== INVENTORY ROUTES ====================
       GoRoute(
         path: AppRoutes.inventory,
@@ -145,7 +145,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               return CreateItemScreen(familyId: familyId);
             },
           ),
-          GoRoute(
+          /* GoRoute(
             path: 'bulk-create-items',
             name: 'bulk-create-items',
             builder: (context, state) {
@@ -160,7 +160,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               final itemId = state.pathParameters['itemId']!;
               return ItemDetailScreen(itemId: itemId);
             },
-          ),
+          ), */
         ],
       ),
       
@@ -173,7 +173,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           return NewSaleScreen(isAdmin: isAdmin);
         },
       ),
-      GoRoute(
+      /* GoRoute(
         path: AppRoutes.transactions,
         name: 'transactions',
         builder: (context, state) => const TransactionListScreen(),
@@ -187,7 +187,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             },
           ),
         ],
-      ),
+      ), */
       
       // ==================== SYNC ROUTES ====================
       GoRoute(
