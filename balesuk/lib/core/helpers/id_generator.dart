@@ -22,14 +22,16 @@ class IdGenerator {
     return itemId;
   }
 
-  /// Generates a transaction ID from device ID and transaction counter
-  /// Example: deviceId="DEV002", trxCounter=24 => "DEV002-0024"
+  /// Generates a transaction ID from device ID, date, and sequence number
+  /// Example: deviceId="DEV001", date="2023-10-27", sequenceNumber=24 => "DEV001-231027-0024"
   static String generateTransactionId({
     required String deviceId,
-    required int trxCounter,
+    required String date, // Expects "YYYY-MM-DD"
+    required int sequenceNumber,
   }) {
-    final trxCode = trxCounter.toString().padLeft(4, '0');
-    return '$deviceId-$trxCode';
+    final datePart = date.replaceAll('-', '').substring(2); // YYMMDD
+    final sequencePart = sequenceNumber.toString().padLeft(4, '0');
+    return '$deviceId-$datePart-$sequencePart';
   }
 
   /// Generates a shop ID with specified length (6-10 characters)

@@ -56,10 +56,8 @@ class IsarService {
 
   Future<void> updateTrxCounter(String deviceId, int newCounter) async {
     final db = await isar;
-    final config = await db.deviceConfigs
-        .filter()
-        .deviceIdEqualTo(deviceId)
-        .findFirst();
+    final config =
+        await db.deviceConfigs.filter().deviceIdEqualTo(deviceId).findFirst();
 
     if (config != null) {
       config.currentTrxCounter = newCounter;
@@ -69,13 +67,10 @@ class IsarService {
     }
   }
 
-  Future<void> resetTrxCounterForNewDay(
-      String deviceId, String newDate) async {
+  Future<void> resetTrxCounterForNewDay(String deviceId, String newDate) async {
     final db = await isar;
-    final config = await db.deviceConfigs
-        .filter()
-        .deviceIdEqualTo(deviceId)
-        .findFirst();
+    final config =
+        await db.deviceConfigs.filter().deviceIdEqualTo(deviceId).findFirst();
 
     if (config != null) {
       config.currentTrxCounter = 1;
@@ -114,7 +109,7 @@ class IsarService {
     }
   }
 
-  // ==================== ITEM FAMILY QUERIES ====================
+  // ==================== FAMILY QUERIES ====================
 
   Stream<List<ItemFamily>> watchAllFamilies(String shopId) async* {
     final db = await isar;
@@ -146,9 +141,16 @@ class IsarService {
     });
   }
 
-  Future<int> getFamilyItemCount(String familyId) async {
+  Future<void> deleteFamily(String familyId) async {
     final db = await isar;
-    return await db.items.filter().familyIdEqualTo(familyId).count();
+    await db.writeTxn(() async {
+      final family =
+          await db.itemFamilys.filter().familyIdEqualTo(familyId).findFirst();
+
+      if (family != null) {
+        await db.itemFamilys.delete(family.id);
+      }
+    });
   }
 
   Future<int> getNextFamilySequence(String shopId) async {
@@ -175,7 +177,12 @@ class IsarService {
 
   Future<List<Item>> getAllItems(String shopId) async {
     final db = await isar;
-    return await db.items.filter().shopIdEqualTo(shopId).findAll();
+    return await db.items
+        .filter()
+        .shopIdEqualTo(shopId)
+        .and()
+        .isDeletedEqualTo(false) // Exclude deleted
+        .findAll();
   }
 
   Future<List<Item>> getItemsByFamily(String familyId) async {
@@ -183,6 +190,8 @@ class IsarService {
     return await db.items
         .filter()
         .familyIdEqualTo(familyId)
+        .and()
+        .isDeletedEqualTo(false) // Exclude deleted
         .sortByName()
         .findAll();
   }
@@ -221,11 +230,11 @@ class IsarService {
 
   Future<List<Item>> searchItems(String shopId, String query) async {
     final db = await isar;
-    final lowerQuery = query.toLowerCase();
-
     return await db.items
         .filter()
         .shopIdEqualTo(shopId)
+        .and()
+        .isDeletedEqualTo(false) // Exclude deleted
         .and()
         .group((q) => q
             .nameContains(query, caseSensitive: false)
@@ -234,10 +243,41 @@ class IsarService {
         .findAll();
   }
 
+  Future<void> updateLastSoldDate(String itemId) async {
+    final db = await isar;
+    final item = await getItemById(itemId);
+
+    if (item != null) {
+      await db.writeTxn(() async {
+        item.lastSoldAt = DateTime.now();
+        await db.items.put(item);
+      });
+    }
+  }
+
   Future<int> getLowStockCount(String shopId) async {
     final db = await isar;
     final allItems = await getAllItems(shopId);
     return allItems.where((item) => item.isLowStock).length;
+  }
+
+  Future<Map<String, dynamic>> getInventoryStats(String shopId) async {
+    final db = await isar;
+    final allItems = await db.items
+        .filter()
+        .shopIdEqualTo(shopId)
+        .and()
+        .isDeletedEqualTo(false) // Exclude deleted
+        .findAll();
+
+    final activeItems = allItems.where((item) => item.isActive).toList();
+
+    return {
+      'totalItems': allItems.length,
+      'activeItems': activeItems.length,
+      'lowStockItems': activeItems.where((item) => item.isLowStock).length,
+      'outOfStockItems': activeItems.where((item) => item.quantity == 0).length,
+    };
   }
 
   Future<int> getNextItemSequence(String familyId, int itemDigits) async {
@@ -253,6 +293,13 @@ class IsarService {
     return maxSeq + 1;
   }
 
+  Future<List<Item>> getEligibleForSoftDelete(String shopId) async {
+    final db = await isar;
+    final allItems = await db.items.filter().shopIdEqualTo(shopId).findAll();
+
+    return allItems.where((item) => item.canBeSoftDeleted).toList();
+  }
+
   // ==================== ATTRIBUTE QUERIES ====================
 
   Future<List<AttributeDefinition>> getAttributesByFamily(
@@ -263,6 +310,11 @@ class IsarService {
         .familyIdEqualTo(familyId)
         .sortByDisplayOrder()
         .findAll();
+  }
+
+  Future<AttributeDefinition?> getAttributeDefinitionById(int id) async {
+    final db = await isar;
+    return await db.attributeDefinitions.get(id);
   }
 
   Future<void> saveAttributeDefinition(AttributeDefinition attr) async {
@@ -278,6 +330,29 @@ class IsarService {
     await db.writeTxn(() async {
       await db.attributeDefinitions.putAll(attrs);
     });
+  }
+
+  Future<void> deleteAttributeDefinition(int attributeId) async {
+    final db = await isar;
+    await db.writeTxn(() async {
+      await db.attributeDefinitions.delete(attributeId);
+    });
+  }
+
+  Future<List<String>> getItemsWithAttribute(int attributeDefId) async {
+    final db = await isar;
+    final attributes = await db.itemAttributes
+        .filter()
+        .attributeDefinitionIdEqualTo(attributeDefId)
+        .findAll();
+
+    // Return unique item IDs
+    return attributes.map((a) => a.itemId).toSet().toList();
+  }
+
+  Future<List<ItemAttribute>> getAttributesByItem(itemId) async {
+    final db = await isar;
+    return await db.itemAttributes.filter().itemIdEqualTo(itemId).findAll();
   }
 
   Future<List<ItemAttribute>> getItemAttributes(String itemId) async {
@@ -296,6 +371,13 @@ class IsarService {
     final db = await isar;
     await db.writeTxn(() async {
       await db.itemAttributes.putAll(attrs);
+    });
+  }
+
+  Future<void> deleteItemAttribute(int attributeId) async {
+    final db = await isar;
+    await db.writeTxn(() async {
+      await db.itemAttributes.delete(attributeId);
     });
   }
 
@@ -325,6 +407,21 @@ class IsarService {
         .findAll();
   }
 
+  Future<List<Transaction>> getTransactionsByDateRange({
+    required String shopId,
+    required String startDate,
+    required String endDate,
+  }) async {
+    final db = await isar;
+    return await db.transactions
+        .filter()
+        .shopIdEqualTo(shopId)
+        .and()
+        .shopOpenDateBetween(startDate, endDate)
+        .sortByCreatedAtDesc()
+        .findAll();
+  }
+
   Future<Transaction?> getTransaction(String transactionId) async {
     final db = await isar;
     return await db.transactions
@@ -347,6 +444,17 @@ class IsarService {
         .deviceIdEqualTo(deviceId)
         .and()
         .isSyncedEqualTo(false)
+        .findAll();
+  }
+
+  Future<List<Transaction>> getUnsyncedTransactionsByShop(String shopId) async {
+    final db = await isar;
+    return await db.transactions
+        .filter()
+        .shopIdEqualTo(shopId)
+        .and()
+        .isSyncedEqualTo(false)
+        .sortByCreatedAtDesc()
         .findAll();
   }
 
@@ -386,8 +494,7 @@ class IsarService {
     });
   }
 
-  Future<void> saveMultipleTransactionLines(
-      List<TransactionLine> lines) async {
+  Future<void> saveMultipleTransactionLines(List<TransactionLine> lines) async {
     final db = await isar;
     await db.writeTxn(() async {
       await db.transactionLines.putAll(lines);
@@ -433,7 +540,7 @@ class IsarService {
     });
   }
 
-  Future<List<PriceHistory>> getItemPriceHistory(String itemId) async {
+  Future<List<PriceHistory>> getPriceHistoryByItem(String itemId) async {
     final db = await isar;
     return await db.priceHistorys
         .filter()
@@ -442,49 +549,51 @@ class IsarService {
         .findAll();
   }
 
-  // ==================== STATISTICS QUERIES ====================
+  // ==================== SOFT DELETE OPERATIONS ====================
 
-/*   Future<double> getTotalInventoryValue(String shopId) async {
-    final items = await getAllItems(shopId);
-    return items.fold(0.0, (sum, item) => sum + (item.price * item.quantity));
-  } 
-  
-   Future<double> getTodayTotalSales(String deviceId, String date) async {
-    final transactions = await getTodayTransactions(deviceId, date);
-    return transactions.fold(0.0, (sum, txn) => sum + txn.totalAmount);
-  }
-  
-  */
+  /// Soft delete an item (makes ID available for reuse)
+  Future<void> softDeleteItem(String itemId) async {
+    final db = await isar;
+    final item = await getItemById(itemId);
 
-  Future<double> getTotalInventoryValue(String shopId) async {
-    final items = await getAllItems(shopId);
-    double total = 0.0;
-    for (final item in items) {
-      total += (item.price * item.quantity);
+    if (item == null) {
+      throw Exception('Item not found: $itemId');
     }
-    return total;
-  }
 
-   Future<double> getTodayTotalSales(String deviceId, String date) async {
-    final transactions = await getTodayTransactions(deviceId, date);
-    double total = 0.0;
-    for (final txn in transactions) {
-      total += txn.totalAmount;
+    if (!item.canBeSoftDeleted) {
+      throw Exception('Item cannot be deleted (still has stock or is active)');
     }
-    return total;
+
+    await db.writeTxn(() async {
+      item.isDeleted = true;
+      item.deletedAt = DateTime.now();
+      item.isActive = false;
+      await db.items.put(item);
+    });
+
+    print('INFO: Item soft deleted - ID: $itemId, Name: ${item.name}');
   }
 
-  Future<Map<String, dynamic>> getInventoryStats(String shopId) async {
-    final families = await getAllFamilies(shopId);
-    final items = await getAllItems(shopId);
-    final totalValue = await getTotalInventoryValue(shopId);
-    final lowStockCount = await getLowStockCount(shopId);
+  /// Get all soft-deleted items (for admin view)
+  Future<List<Item>> getSoftDeletedItems(String shopId) async {
+    final db = await isar;
+    return await db.items
+        .filter()
+        .shopIdEqualTo(shopId)
+        .and()
+        .isDeletedEqualTo(true)
+        .sortByDeletedAt()
+        .findAll();
+  }
 
-    return {
-      'totalFamilies': families.length,
-      'totalItems': items.length,
-      'totalValue': totalValue,
-      'lowStockCount': lowStockCount,
-    };
+  /// Get count of soft-deleted items (reusable IDs)
+  Future<int> getSoftDeletedCount(String shopId) async {
+    final db = await isar;
+    return await db.items
+        .filter()
+        .shopIdEqualTo(shopId)
+        .and()
+        .isDeletedEqualTo(true)
+        .count();
   }
 }

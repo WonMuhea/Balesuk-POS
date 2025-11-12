@@ -305,7 +305,7 @@ class _NewSaleScreenState extends ConsumerState<NewSaleScreen> with LoggerMixin 
     final error = await ref.read(saleProvider.notifier).completeSale(
       shopId: deviceConfig.shopId,
       deviceId: deviceConfig.deviceId,
-      shopOpenDate: deviceConfig.currentShopOpenDate ?? '',
+      shopOpenDate: deviceConfig.currentShopOpenDate,
     );
     
     if (error != null) {
@@ -419,10 +419,10 @@ class _NewSaleScreenState extends ConsumerState<NewSaleScreen> with LoggerMixin 
                           ref.read(saleProvider.notifier).clearCart();
                           Navigator.pop(context);
                         },
-                        child: Text(AppStrings.confirm),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.error,
                         ),
+                        child: Text(AppStrings.confirm),
                       ),
                     ],
                   ),
@@ -441,7 +441,7 @@ class _NewSaleScreenState extends ConsumerState<NewSaleScreen> with LoggerMixin 
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withAlpha((255 * 0.05).round()),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -544,7 +544,7 @@ class _NewSaleScreenState extends ConsumerState<NewSaleScreen> with LoggerMixin 
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withAlpha((255 * 0.1).round()),
                   blurRadius: 8,
                   offset: const Offset(0, -2),
                 ),
@@ -560,7 +560,7 @@ class _NewSaleScreenState extends ConsumerState<NewSaleScreen> with LoggerMixin 
                       padding: const EdgeInsets.all(12),
                       margin: const EdgeInsets.only(bottom: 16),
                       decoration: BoxDecoration(
-                        color: AppColors.primaryLight.withOpacity(0.1),
+                        color: AppColors.primaryLight.withAlpha((255 * 0.1).round()),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
@@ -781,7 +781,7 @@ class _CartItemCard extends StatelessWidget {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.primaryLight.withOpacity(0.1),
+                        color: AppColors.primaryLight.withAlpha((255*0.1).round()),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(

@@ -6,13 +6,102 @@ part 'isar_models.g.dart';
 // ==================== ENUMS ====================
 
 enum DeviceMode { ADMIN, USER }
-enum TransactionStatus { DUBE, COMPLETED }
+enum TransactionStatus { DUBE, COMPLETED, CANCELLED}
 enum AttributeDataType { TEXT, NUMBER, DATE, BOOLEAN, DROPDOWN }
 enum SyncStatus {
   SUCCESS,
   FAILED_UNKNOWN_ITEM,
   FAILED_PRICE_MISMATCH,
   FAILED_OTHER
+}
+
+// ==================== DEVICE CONFIG ====================
+
+@collection
+class DeviceConfig {
+  Id id = Isar.autoIncrement;
+
+  @Index(unique: true)
+  late String deviceId;
+
+  late String shopId;
+  
+  @Enumerated(EnumType.name)
+  late DeviceMode mode;
+  
+  late bool isConfigured;
+  late int currentTrxCounter;
+  late String currentShopOpenDate;
+  late DateTime createdAt;
+
+  DeviceConfig();
+
+  DeviceConfig.create({
+    required this.deviceId,
+    required this.shopId,
+    required this.mode,
+    required this.isConfigured,
+    required this.currentTrxCounter,
+    required this.currentShopOpenDate,
+    required this.createdAt,
+  });
+}
+
+// ==================== SHOP ====================
+
+@collection
+class Shop {
+  Id id = Isar.autoIncrement;
+
+  @Index(unique: true)
+  late String shopId;
+
+  late String name;
+  late int familyDigits;
+  late int itemDigits;
+  
+  late DateTime createdAt;
+  late bool isOpen;
+  late String currentShopOpenDate;
+
+  Shop();
+
+  Shop.create({
+    required this.shopId,
+    required this.name,
+    required this.familyDigits,
+    required this.itemDigits,
+    required this.createdAt,
+    required this.isOpen,
+    required this.currentShopOpenDate,
+  });
+}
+
+// ==================== ITEM FAMILY ====================
+
+@collection
+class ItemFamily {
+  Id id = Isar.autoIncrement;
+
+  @Index(unique: true)
+  late String familyId;
+
+  @Index()
+  late String shopId;
+
+  late String name;
+  String? description;
+  late DateTime createdAt;
+
+  ItemFamily();
+
+  ItemFamily.create({
+    required this.familyId,
+    required this.shopId,
+    required this.name,
+    this.description,
+    required this.createdAt,
+  });
 }
 
 // ==================== ITEM ====================
@@ -40,6 +129,11 @@ class Item {
   late bool isActive;
   late DateTime createdAt;
   late DateTime updatedAt;
+  DateTime? lastSoldAt;
+
+  // Soft delete fields
+  late bool isDeleted;
+  DateTime? deletedAt;
 
   Item();
 
@@ -48,33 +142,102 @@ class Item {
     required this.familyId,
     required this.shopId,
     required this.name,
-    required Money priceValue, // Accept Money
+    required Money priceValue,
     required this.quantity,
     required this.minQuantity,
     required this.isActive,
     required this.createdAt,
     required this.updatedAt,
-  }) : price = priceValue.amount; // Store as double
+  }) : price = priceValue.amount,
+       isDeleted = false;
 
-  // Computed properties - @ignore tells Isar not to persist these
+  // Computed properties
   @ignore
   bool get isLowStock => quantity <= minQuantity && isActive;
   
   @ignore
   bool get hasStock => quantity > 0;
   
-  // Money getter for price
   @ignore
   Money get priceAsMoney => Money.fromDouble(price);
   
-  // Money setter for price
   set priceAsMoney(Money value) {
     price = value.amount;
   }
   
-  // Calculate total inventory value
   @ignore
   Money get inventoryValue => priceAsMoney * quantity;
+
+  // Check if can be soft deleted
+  @ignore
+  bool get canBeSoftDeleted {
+    return quantity == 0 && !isActive && !isDeleted;
+  }
+}
+
+// ==================== ATTRIBUTE DEFINITION ====================
+
+@collection
+class AttributeDefinition {
+  Id id = Isar.autoIncrement;
+
+  @Index()
+  late String familyId;
+
+  late String name;
+  
+  @Enumerated(EnumType.name)
+  late AttributeDataType dataType;
+  
+  late bool isRequired;
+  List<String>? dropdownOptions;
+  late int displayOrder;
+  late DateTime createdAt;
+
+  AttributeDefinition();
+
+  AttributeDefinition.create({
+    required this.familyId,
+    required this.name,
+    required this.dataType,
+    required this.isRequired,
+    this.dropdownOptions,
+    required this.displayOrder,
+    required this.createdAt,
+  });
+}
+
+// ==================== ITEM ATTRIBUTE ====================
+
+@collection
+class ItemAttribute {
+  Id id = Isar.autoIncrement;
+
+  @Index()
+  late String itemId;
+
+  late int attributeDefinitionId;
+  
+  String? valueText;
+  double? valueNumber;
+  String? valueDate;
+  bool? valueBoolean;
+  
+  late DateTime createdAt;
+  late DateTime updatedAt;
+
+  ItemAttribute();
+
+  ItemAttribute.create({
+    required this.itemId,
+    required this.attributeDefinitionId,
+    this.valueText,
+    this.valueNumber,
+    this.valueDate,
+    this.valueBoolean,
+    required this.createdAt,
+    required this.updatedAt,
+  });
 }
 
 // ==================== TRANSACTION ====================
@@ -89,8 +252,7 @@ class Transaction {
   @Index()
   late String deviceId;
 
-  @Index()
-  late String shopId;
+  late String shopId;  // No index - single shop system
 
   @Enumerated(EnumType.name)
   late TransactionStatus status;
@@ -98,8 +260,8 @@ class Transaction {
   String? customerName;
   String? customerPhone;
   
-  // Store totalAmount as double, use Money for operations
   late double totalAmount;
+  late double totalDiscount;  // NEW: Sum of all line discounts
   
   late DateTime createdAt;
 
@@ -118,20 +280,27 @@ class Transaction {
     required this.status,
     this.customerName,
     this.customerPhone,
-    required Money totalAmountValue, // Accept Money
+    required Money totalAmountValue,
+    required Money totalDiscountValue,  // NEW
     required this.createdAt,
     required this.shopOpenDate,
     required this.isSynced,
     this.syncedAt,
-  }) : totalAmount = totalAmountValue.amount; // Store as double
+  }) : totalAmount = totalAmountValue.amount,
+       totalDiscount = totalDiscountValue.amount;
 
-  // Money getter
   @ignore
   Money get totalAsMoney => Money.fromDouble(totalAmount);
   
-  // Money setter
   set totalAsMoney(Money value) {
     totalAmount = value.amount;
+  }
+
+  @ignore
+  Money get totalDiscountAsMoney => Money.fromDouble(totalDiscount);
+  
+  set totalDiscountAsMoney(Money value) {
+    totalDiscount = value.amount;
   }
 }
 
@@ -144,12 +313,16 @@ class TransactionLine {
   @Index()
   late String transactionId;
 
+  late int lineNumber;        // NEW: Line sequence
   late String itemId;
+  String? itemName;           // NEW: For USER mode manual entry
   late int quantity;
   
-  // Store prices as double, use Money for operations
-  late double unitPrice;
-  late double lineTotal;
+  // Price fields
+  late double originalPrice;  // NEW: Tagged/inventory price
+  late double discount;       // NEW: Discount amount
+  late double unitPrice;      // Final price after discount
+  late double lineTotal;      // unitPrice * quantity
   
   late DateTime createdAt;
 
@@ -157,39 +330,67 @@ class TransactionLine {
 
   TransactionLine.create({
     required this.transactionId,
+    required this.lineNumber,
     required this.itemId,
+    this.itemName,
     required this.quantity,
-    required Money unitPriceValue, // Accept Money
-    required Money lineTotalValue, // Accept Money
+    required Money originalPriceValue,
+    required Money discountValue,
+    required Money unitPriceValue,
+    required Money lineTotalValue,
     required this.createdAt,
-  }) : unitPrice = unitPriceValue.amount,
+  }) : originalPrice = originalPriceValue.amount,
+       discount = discountValue.amount,
+       unitPrice = unitPriceValue.amount,
        lineTotal = lineTotalValue.amount;
 
   // Money getters
+  @ignore
+  Money get originalPriceAsMoney => Money.fromDouble(originalPrice);
+  
+  @ignore
+  Money get discountAsMoney => Money.fromDouble(discount);
+  
   @ignore
   Money get unitPriceAsMoney => Money.fromDouble(unitPrice);
   
   @ignore
   Money get lineTotalAsMoney => Money.fromDouble(lineTotal);
+
+  // Calculated discount percentage
+  @ignore
+  double get discountPercentage => 
+    originalPrice > 0 ? (discount / originalPrice * 100) : 0.0;
+}
+
+// ==================== SYNC HISTORY ====================
+
+@collection
+class SyncHistory {
+  Id id = Isar.autoIncrement;
+
+  @Index()
+  late String fromDeviceId;
+
+  late String toDeviceId;
+  late DateTime dateTime;
   
-  // Money setters
-  set unitPriceAsMoney(Money value) {
-    unitPrice = value.amount;
-  }
+  @Enumerated(EnumType.name)
+  late SyncStatus status;
   
-  set lineTotalAsMoney(Money value) {
-    lineTotal = value.amount;
-  }
-  
-  // Calculate line total from quantity and unit price
-  Money calculateLineTotal() {
-    return unitPriceAsMoney * quantity;
-  }
-  
-  // Update line total based on quantity and unit price
-  void updateLineTotal() {
-    lineTotalAsMoney = calculateLineTotal();
-  }
+  late int transactionsCount;
+  String? details;
+
+  SyncHistory();
+
+  SyncHistory.create({
+    required this.fromDeviceId,
+    required this.toDeviceId,
+    required this.dateTime,
+    required this.status,
+    required this.transactionsCount,
+    this.details,
+  });
 }
 
 // ==================== PRICE HISTORY ====================
@@ -210,180 +411,16 @@ class PriceHistory {
 
   PriceHistory.create({
     required this.itemId,
-    required Money oldPriceValue, // Accept Money
-    required Money newPriceValue, // Accept Money
+    required Money oldPriceValue,
+    required Money newPriceValue,
     required this.changedAt,
     required this.changedBy,
   }) : oldPrice = oldPriceValue.amount,
        newPrice = newPriceValue.amount;
 
-  // Money getters
   @ignore
   Money get oldPriceAsMoney => Money.fromDouble(oldPrice);
   
   @ignore
   Money get newPriceAsMoney => Money.fromDouble(newPrice);
-  
-  // Calculate price difference
-  @ignore
-  Money get priceDifference => newPriceAsMoney - oldPriceAsMoney;
-  
-  // Calculate percentage change
-  @ignore
-  double get percentageChange {
-    if (oldPrice == 0) return 0;
-    return ((newPrice - oldPrice) / oldPrice) * 100;
-  }
-}
-
-// ==================== OTHER COLLECTIONS (unchanged) ====================
-
-@collection
-class DeviceConfig {
-  Id id = Isar.autoIncrement;
-  @Index(unique: true)
-  late String deviceId;
-  late String shopId;
-  @Enumerated(EnumType.name)
-  late DeviceMode mode;
-  late bool isConfigured;
-  late int currentTrxCounter;
-  late String currentShopOpenDate;
-  late DateTime createdAt;
-
-  DeviceConfig();
-
-  DeviceConfig.create({
-    required this.deviceId,
-    required this.shopId,
-    required this.mode,
-    required this.isConfigured,
-    required this.currentTrxCounter,
-    required this.currentShopOpenDate,
-    required this.createdAt,
-  });
-}
-
-@collection
-class Shop {
-  Id id = Isar.autoIncrement;
-  @Index(unique: true)
-  late String shopId;
-  late String name;
-  late int familyDigits;
-  late int itemDigits;
-  late DateTime createdAt;
-  late bool isOpen;
-  late String currentShopOpenDate;
-
-  Shop();
-
-  Shop.create({
-    required this.shopId,
-    required this.name,
-    required this.familyDigits,
-    required this.itemDigits,
-    required this.createdAt,
-    required this.isOpen,
-    required this.currentShopOpenDate,
-  });
-}
-
-@collection
-class ItemFamily {
-  Id id = Isar.autoIncrement;
-  @Index(unique: true)
-  late String familyId;
-  @Index()
-  late String shopId;
-  late String name;
-  String? description;
-  late DateTime createdAt;
-
-  ItemFamily();
-
-  ItemFamily.create({
-    required this.familyId,
-    required this.shopId,
-    required this.name,
-    this.description,
-    required this.createdAt,
-  });
-}
-
-@collection
-class AttributeDefinition {
-  Id id = Isar.autoIncrement;
-  @Index()
-  late String familyId;
-  late String name;
-  @Enumerated(EnumType.name)
-  late AttributeDataType dataType;
-  late bool isRequired;
-  List<String>? dropdownOptions;
-  late int displayOrder;
-  late DateTime createdAt;
-
-  AttributeDefinition();
-
-  AttributeDefinition.create({
-    required this.familyId,
-    required this.name,
-    required this.dataType,
-    required this.isRequired,
-    this.dropdownOptions,
-    required this.displayOrder,
-    required this.createdAt,
-  });
-}
-
-@collection
-class ItemAttribute {
-  Id id = Isar.autoIncrement;
-  @Index()
-  late String itemId;
-  late int attributeDefinitionId;
-  String? valueText;
-  double? valueNumber;
-  String? valueDate;
-  bool? valueBoolean;
-  late DateTime createdAt;
-  late DateTime updatedAt;
-
-  ItemAttribute();
-
-  ItemAttribute.create({
-    required this.itemId,
-    required this.attributeDefinitionId,
-    this.valueText,
-    this.valueNumber,
-    this.valueDate,
-    this.valueBoolean,
-    required this.createdAt,
-    required this.updatedAt,
-  });
-}
-
-@collection
-class SyncHistory {
-  Id id = Isar.autoIncrement;
-  @Index()
-  late String fromDeviceId;
-  late String toDeviceId;
-  late DateTime dateTime;
-  @Enumerated(EnumType.name)
-  late SyncStatus status;
-  late int transactionsCount;
-  String? details;
-
-  SyncHistory();
-
-  SyncHistory.create({
-    required this.fromDeviceId,
-    required this.toDeviceId,
-    required this.dateTime,
-    required this.status,
-    required this.transactionsCount,
-    this.details,
-  });
 }
