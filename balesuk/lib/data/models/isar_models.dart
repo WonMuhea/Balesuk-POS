@@ -1,3 +1,5 @@
+// lib/data/models/isar_models.dart
+
 import 'package:isar/isar.dart';
 import '../../core/utils/money.dart';
 
@@ -6,7 +8,7 @@ part 'isar_models.g.dart';
 // ==================== ENUMS ====================
 
 enum DeviceMode { ADMIN, USER }
-enum TransactionStatus { DUBE, COMPLETED, CANCELLED}
+enum TransactionStatus { DUBE, COMPLETED }
 enum AttributeDataType { TEXT, NUMBER, DATE, BOOLEAN, DROPDOWN }
 enum SyncStatus {
   SUCCESS,
@@ -57,8 +59,8 @@ class Shop {
   late String shopId;
 
   late String name;
-  late int familyDigits;
-  late int itemDigits;
+  late int? familyDigits;
+  late int? itemDigits;
   
   late DateTime createdAt;
   late bool isOpen;
@@ -69,8 +71,8 @@ class Shop {
   Shop.create({
     required this.shopId,
     required this.name,
-    required this.familyDigits,
-    required this.itemDigits,
+    this.familyDigits,
+    this.itemDigits,
     required this.createdAt,
     required this.isOpen,
     required this.currentShopOpenDate,
@@ -83,8 +85,9 @@ class Shop {
 class ItemFamily {
   Id id = Isar.autoIncrement;
 
+  // INTEGER storage for fast queries ⭐
   @Index(unique: true)
-  late String familyId;
+  late int familyCode;
 
   @Index()
   late String shopId;
@@ -92,16 +95,28 @@ class ItemFamily {
   late String name;
   String? description;
   late DateTime createdAt;
+  
+  // Track current max sequence for O(1) ID generation ⭐
+  late int currentMaxSequence;
 
   ItemFamily();
 
   ItemFamily.create({
-    required this.familyId,
+    required this.familyCode,
     required this.shopId,
     required this.name,
     this.description,
     required this.createdAt,
-  });
+  }) : currentMaxSequence = 0;
+
+  // STRING getter (formatted with leading zeros) ⭐
+  @ignore
+  String get familyId => familyCode.toString().padLeft(2, '0');
+  
+  // Setter from string
+  set familyId(String value) {
+    familyCode = int.parse(value);
+  }
 }
 
 // ==================== ITEM ====================
@@ -110,20 +125,18 @@ class ItemFamily {
 class Item {
   Id id = Isar.autoIncrement;
 
+  // INTEGER storage for fast queries ⭐
   @Index(unique: true)
-  late String itemId;
+  late int itemCode;
 
   @Index()
-  late String familyId;
+  late int familyCode;
 
   @Index()
   late String shopId;
 
   late String name;
-  
-  // Store price as double, but use Money class for operations
   late double price;
-  
   late int quantity;
   late int minQuantity;
   late bool isActive;
@@ -138,8 +151,8 @@ class Item {
   Item();
 
   Item.create({
-    required this.itemId,
-    required this.familyId,
+    required this.itemCode,
+    required this.familyCode,
     required this.shopId,
     required this.name,
     required Money priceValue,
@@ -150,6 +163,25 @@ class Item {
     required this.updatedAt,
   }) : price = priceValue.amount,
        isDeleted = false;
+
+  // STRING getters (formatted with leading zeros) ⭐
+  @ignore
+  String get itemId => itemCode.toString().padLeft(6, '0');
+  
+  @ignore
+  String get familyId => familyCode.toString().padLeft(2, '0');
+  
+  @ignore
+  String get barcodeId => itemId;  // Alias for barcode
+  
+  // Setters from string
+  set itemId(String value) {
+    itemCode = int.parse(value);
+  }
+  
+  set familyId(String value) {
+    familyCode = int.parse(value);
+  }
 
   // Computed properties
   @ignore
@@ -168,7 +200,6 @@ class Item {
   @ignore
   Money get inventoryValue => priceAsMoney * quantity;
 
-  // Check if can be soft deleted
   @ignore
   bool get canBeSoftDeleted {
     return quantity == 0 && !isActive && !isDeleted;
@@ -182,7 +213,7 @@ class AttributeDefinition {
   Id id = Isar.autoIncrement;
 
   @Index()
-  late String familyId;
+  late int familyCode;  // ⭐ Changed to int
 
   late String name;
   
@@ -197,7 +228,7 @@ class AttributeDefinition {
   AttributeDefinition();
 
   AttributeDefinition.create({
-    required this.familyId,
+    required this.familyCode,
     required this.name,
     required this.dataType,
     required this.isRequired,
@@ -205,6 +236,14 @@ class AttributeDefinition {
     required this.displayOrder,
     required this.createdAt,
   });
+
+  // STRING getter
+  @ignore
+  String get familyId => familyCode.toString().padLeft(2, '0');
+  
+  set familyId(String value) {
+    familyCode = int.parse(value);
+  }
 }
 
 // ==================== ITEM ATTRIBUTE ====================
@@ -214,7 +253,7 @@ class ItemAttribute {
   Id id = Isar.autoIncrement;
 
   @Index()
-  late String itemId;
+  late int itemCode;  // ⭐ Changed to int
 
   late int attributeDefinitionId;
   
@@ -229,7 +268,7 @@ class ItemAttribute {
   ItemAttribute();
 
   ItemAttribute.create({
-    required this.itemId,
+    required this.itemCode,
     required this.attributeDefinitionId,
     this.valueText,
     this.valueNumber,
@@ -238,6 +277,14 @@ class ItemAttribute {
     required this.createdAt,
     required this.updatedAt,
   });
+
+  // STRING getter
+  @ignore
+  String get itemId => itemCode.toString().padLeft(6, '0');
+  
+  set itemId(String value) {
+    itemCode = int.parse(value);
+  }
 }
 
 // ==================== TRANSACTION ====================
@@ -252,7 +299,7 @@ class Transaction {
   @Index()
   late String deviceId;
 
-  late String shopId;  // No index - single shop system
+  late String shopId;
 
   @Enumerated(EnumType.name)
   late TransactionStatus status;
@@ -261,7 +308,7 @@ class Transaction {
   String? customerPhone;
   
   late double totalAmount;
-  late double totalDiscount;  // NEW: Sum of all line discounts
+  late double totalDiscount;
   
   late DateTime createdAt;
 
@@ -281,7 +328,7 @@ class Transaction {
     this.customerName,
     this.customerPhone,
     required Money totalAmountValue,
-    required Money totalDiscountValue,  // NEW
+    required Money totalDiscountValue,
     required this.createdAt,
     required this.shopOpenDate,
     required this.isSynced,
@@ -313,16 +360,18 @@ class TransactionLine {
   @Index()
   late String transactionId;
 
-  late int lineNumber;        // NEW: Line sequence
-  late String itemId;
-  String? itemName;           // NEW: For USER mode manual entry
+  late int lineNumber;
+  
+  // INTEGER storage for item reference ⭐
+  late int itemCode;
+  
+  String? itemName;
   late int quantity;
   
-  // Price fields
-  late double originalPrice;  // NEW: Tagged/inventory price
-  late double discount;       // NEW: Discount amount
-  late double unitPrice;      // Final price after discount
-  late double lineTotal;      // unitPrice * quantity
+  late double originalPrice;
+  late double discount;
+  late double unitPrice;
+  late double lineTotal;
   
   late DateTime createdAt;
 
@@ -331,7 +380,7 @@ class TransactionLine {
   TransactionLine.create({
     required this.transactionId,
     required this.lineNumber,
-    required this.itemId,
+    required this.itemCode,
     this.itemName,
     required this.quantity,
     required Money originalPriceValue,
@@ -344,7 +393,14 @@ class TransactionLine {
        unitPrice = unitPriceValue.amount,
        lineTotal = lineTotalValue.amount;
 
-  // Money getters
+  // STRING getter for display ⭐
+  @ignore
+  String get itemId => itemCode.toString().padLeft(6, '0');
+  
+  set itemId(String value) {
+    itemCode = int.parse(value);
+  }
+
   @ignore
   Money get originalPriceAsMoney => Money.fromDouble(originalPrice);
   
@@ -357,7 +413,6 @@ class TransactionLine {
   @ignore
   Money get lineTotalAsMoney => Money.fromDouble(lineTotal);
 
-  // Calculated discount percentage
   @ignore
   double get discountPercentage => 
     originalPrice > 0 ? (discount / originalPrice * 100) : 0.0;
@@ -400,7 +455,7 @@ class PriceHistory {
   Id id = Isar.autoIncrement;
 
   @Index()
-  late String itemId;
+  late int itemCode;  // ⭐ Changed to int
 
   late double oldPrice;
   late double newPrice;
@@ -410,7 +465,7 @@ class PriceHistory {
   PriceHistory();
 
   PriceHistory.create({
-    required this.itemId,
+    required this.itemCode,
     required Money oldPriceValue,
     required Money newPriceValue,
     required this.changedAt,
@@ -423,4 +478,32 @@ class PriceHistory {
   
   @ignore
   Money get newPriceAsMoney => Money.fromDouble(newPrice);
+
+  // STRING getter
+  @ignore
+  String get itemId => itemCode.toString().padLeft(6, '0');
+  
+  set itemId(String value) {
+    itemCode = int.parse(value);
+  }
+}
+// ==================== SEQUENCE ====================
+
+@collection
+class Sequence {
+  /// The unique key for the sequence record (e.g., 'family', 'item').
+  final Id key; 
+
+  /// The shopId is part of the ID for unique tracking per location.
+  @Index(unique: true)
+  final String shopId;
+
+  /// The current value of the sequence number.
+  int value;
+
+  Sequence({
+    required this.key,
+    required this.shopId,
+    this.value = 0,
+  });
 }

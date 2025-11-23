@@ -120,12 +120,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
        */
       // ==================== SHOP ROUTES ====================
-     /*  GoRoute(
+      GoRoute(
         path: AppRoutes.openShop,
         name: 'open-shop',
         builder: (context, state) => const OpenShopScreen(),
       ),
-       */
+      
       // ==================== INVENTORY ROUTES ====================
       GoRoute(
         path: AppRoutes.inventory,
@@ -142,30 +142,30 @@ final routerProvider = Provider<GoRouter>((ref) {
             name: 'create-item',
             builder: (context, state) {
               final familyId = state.uri.queryParameters['familyId'];
-              return CreateItemScreen(familyId: familyId);
+              return CreateItemScreen(familyCode: int.tryParse(familyId ?? ''));
             },
           ),
-          /* GoRoute(
+          /*GoRoute(
             path: 'bulk-create-items',
             name: 'bulk-create-items',
             builder: (context, state) {
               final familyId = state.uri.queryParameters['familyId'] ?? '';
               return BulkItemCreationScreen(familyId: familyId);
             },
-          ),
+          ),*/
           GoRoute(
             path: 'item/:itemId',
             name: 'item-detail',
             builder: (context, state) {
               final itemId = state.pathParameters['itemId']!;
-              return ItemDetailScreen(itemId: itemId);
+              return ItemDetailScreen(itemId: itemId,);
             },
-          ), */
+          ), 
         ],
       ),
       
       // ==================== SALES ROUTES ====================
-      GoRoute(
+      /* GoRoute(
         path: AppRoutes.newSale,
         name: 'new-sale',
         builder: (context, state) {
@@ -173,7 +173,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           return NewSaleScreen(isAdmin: isAdmin);
         },
       ),
-      /* GoRoute(
+       GoRoute(
         path: AppRoutes.transactions,
         name: 'transactions',
         builder: (context, state) => const TransactionListScreen(),
@@ -187,8 +187,8 @@ final routerProvider = Provider<GoRouter>((ref) {
             },
           ),
         ],
-      ), */
-      
+      ), 
+       */
       // ==================== SYNC ROUTES ====================
       GoRoute(
         path: AppRoutes.sync,

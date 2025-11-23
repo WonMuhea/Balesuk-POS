@@ -18,6 +18,11 @@ class Money {
     return Money._(amount.toDouble());
   }
 
+  /// Zero money value
+  factory Money.zero() {
+    return const Money._(0.0);
+  }
+
   /// Creates Money from string
   factory Money.parse(String amount) {
     final parsed = double.tryParse(amount);
@@ -27,8 +32,6 @@ class Money {
     return Money.fromDouble(parsed);
   }
 
-  /// Zero money constant
-  static const Money zero = Money._(0.0);
 
   /// Get the raw amount value
   double get amount => _amount;
@@ -97,6 +100,13 @@ class Money {
     return Money._(_amount.abs());
   }
 
+  bool equals(Money other) {
+    return _amount == other._amount;
+  }
+  
+  bool notEquals(Money other) {
+    return _amount != other._amount;
+  }
   /// Get minimum of two money values
   Money min(Money other) {
     return _amount < other._amount ? this : other;
@@ -198,25 +208,25 @@ class Money {
 extension MoneyListExtension on List<Money> {
   /// Sum all money values in the list
   Money sum() {
-    if (isEmpty) return Money.zero;
-    return fold(Money.zero, (sum, money) => sum + money);
+    if (isEmpty) return Money.zero();
+    return fold(Money.zero(), (sum, money) => sum + money);
   }
 
   /// Get average of all money values
   Money average() {
-    if (isEmpty) return Money.zero;
+    if (isEmpty) return Money.zero();
     return sum() / length;
   }
 
   /// Get minimum value
   Money minimum() {
-    if (isEmpty) return Money.zero;
+    if (isEmpty) return Money.zero();
     return reduce((a, b) => a < b ? a : b);
   }
 
   /// Get maximum value
   Money maximum() {
-    if (isEmpty) return Money.zero;
+    if (isEmpty) return Money.zero();
     return reduce((a, b) => a > b ? a : b);
   }
 }

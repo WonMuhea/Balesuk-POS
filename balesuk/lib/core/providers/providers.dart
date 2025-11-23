@@ -1,3 +1,4 @@
+import 'package:balesuk/core/helpers/id_generator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/database/isar_service.dart';
@@ -69,43 +70,6 @@ class DeviceConfigNotifier extends StateNotifier<AsyncValue<DeviceConfig?>> {
     }
   }
 
-  Future<void> updateTrxCounter(int newCounter) async {
-    final config = state.value;
-    if (config == null) return;
-
-    try {
-      await _isarService.updateTrxCounter(config.deviceId, newCounter);
-      config.currentTrxCounter = newCounter;
-      state = AsyncValue.data(config);
-    } catch (e, stack) {
-      state = AsyncValue.error(e, stack);
-    }
-  }
-
-  Future<void> incrementTrxCounter() async {
-    final config = state.value;
-    if (config == null) return;
-
-    await updateTrxCounter(config.currentTrxCounter + 1);
-  }
-
-  Future<void> resetForNewDay(String newDate) async {
-    final config = state.value;
-    if (config == null) return;
-
-    try {
-      await _isarService.resetTrxCounterForNewDay(config.deviceId, newDate);
-      config.currentTrxCounter = 1;
-      config.currentShopOpenDate = newDate;
-      state = AsyncValue.data(config);
-    } catch (e, stack) {
-      state = AsyncValue.error(e, stack);
-    }
-  }
-
-  void reload() {
-    _loadConfig();
-  }
 }
 
 // ==================== SHOP PROVIDER ====================
@@ -168,9 +132,7 @@ class ShopNotifier extends StateNotifier<AsyncValue<Shop?>> {
       // Also update device config if needed
       final deviceConfig = _ref.read(deviceConfigNotifierProvider).value;
       if (deviceConfig != null && deviceConfig.currentShopOpenDate != today) {
-        await _ref
-            .read(deviceConfigNotifierProvider.notifier)
-            .resetForNewDay(today);
+         _ref.read(deviceConfigNotifierProvider.notifier);
       }
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
@@ -211,15 +173,16 @@ final itemsProvider = StreamProvider.family<List<Item>, String>((ref, shopId) {
 });
 
 final itemsByFamilyProvider =
-    FutureProvider.family<List<Item>, String>((ref, familyId) async {
+    FutureProvider.family<List<Item>, int>((ref, familyCode) async {
   final isarService = ref.watch(isarServiceProvider);
-  return await isarService.getItemsByFamily(familyId);
+  return await isarService.getItemsByFamilyCode(familyCode);
 });
 
 final itemProvider =
     FutureProvider.family<Item?, String>((ref, itemId) async {
   final isarService = ref.watch(isarServiceProvider);
-  return await isarService.getItemById(itemId);
+  final shop = ref.watch(shopProvider).value;
+  return await isarService.getItemByCode(IdGenerator.parseToItemCode(itemId, shop?.familyDigits! ?? 0));
 });
 
 final inventoryStatsProvider =
@@ -249,6 +212,12 @@ class TransactionParams {
 }
 
 final todayTransactionsProvider =
+    StreamProvider.family<List<Transaction>, TransactionParams>((ref, params) {
+  final isarService = ref.watch(isarServiceProvider);
+  return isarService.watchTodayTransactions(params.deviceId, params.date);
+});
+
+final todaysStatsProvider =
     StreamProvider.family<List<Transaction>, TransactionParams>((ref, params) {
   final isarService = ref.watch(isarServiceProvider);
   return isarService.watchTodayTransactions(params.deviceId, params.date);

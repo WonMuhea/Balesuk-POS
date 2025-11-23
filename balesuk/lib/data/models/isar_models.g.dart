@@ -2624,23 +2624,28 @@ const ItemFamilySchema = CollectionSchema(
       name: r'createdAt',
       type: IsarType.dateTime,
     ),
-    r'description': PropertySchema(
+    r'currentMaxSequence': PropertySchema(
       id: 1,
+      name: r'currentMaxSequence',
+      type: IsarType.long,
+    ),
+    r'description': PropertySchema(
+      id: 2,
       name: r'description',
       type: IsarType.string,
     ),
-    r'familyId': PropertySchema(
-      id: 2,
-      name: r'familyId',
-      type: IsarType.string,
+    r'familyCode': PropertySchema(
+      id: 3,
+      name: r'familyCode',
+      type: IsarType.long,
     ),
     r'name': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'name',
       type: IsarType.string,
     ),
     r'shopId': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'shopId',
       type: IsarType.string,
     )
@@ -2651,16 +2656,16 @@ const ItemFamilySchema = CollectionSchema(
   deserializeProp: _itemFamilyDeserializeProp,
   idName: r'id',
   indexes: {
-    r'familyId': IndexSchema(
-      id: 928332670682933091,
-      name: r'familyId',
+    r'familyCode': IndexSchema(
+      id: 242092215659102643,
+      name: r'familyCode',
       unique: true,
       replace: false,
       properties: [
         IndexPropertySchema(
-          name: r'familyId',
-          type: IndexType.hash,
-          caseSensitive: true,
+          name: r'familyCode',
+          type: IndexType.value,
+          caseSensitive: false,
         )
       ],
     ),
@@ -2698,7 +2703,6 @@ int _itemFamilyEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
-  bytesCount += 3 + object.familyId.length * 3;
   bytesCount += 3 + object.name.length * 3;
   bytesCount += 3 + object.shopId.length * 3;
   return bytesCount;
@@ -2711,10 +2715,11 @@ void _itemFamilySerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeDateTime(offsets[0], object.createdAt);
-  writer.writeString(offsets[1], object.description);
-  writer.writeString(offsets[2], object.familyId);
-  writer.writeString(offsets[3], object.name);
-  writer.writeString(offsets[4], object.shopId);
+  writer.writeLong(offsets[1], object.currentMaxSequence);
+  writer.writeString(offsets[2], object.description);
+  writer.writeLong(offsets[3], object.familyCode);
+  writer.writeString(offsets[4], object.name);
+  writer.writeString(offsets[5], object.shopId);
 }
 
 ItemFamily _itemFamilyDeserialize(
@@ -2725,11 +2730,12 @@ ItemFamily _itemFamilyDeserialize(
 ) {
   final object = ItemFamily();
   object.createdAt = reader.readDateTime(offsets[0]);
-  object.description = reader.readStringOrNull(offsets[1]);
-  object.familyId = reader.readString(offsets[2]);
+  object.currentMaxSequence = reader.readLong(offsets[1]);
+  object.description = reader.readStringOrNull(offsets[2]);
+  object.familyCode = reader.readLong(offsets[3]);
   object.id = id;
-  object.name = reader.readString(offsets[3]);
-  object.shopId = reader.readString(offsets[4]);
+  object.name = reader.readString(offsets[4]);
+  object.shopId = reader.readString(offsets[5]);
   return object;
 }
 
@@ -2743,12 +2749,14 @@ P _itemFamilyDeserializeProp<P>(
     case 0:
       return (reader.readDateTime(offset)) as P;
     case 1:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 2:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 3:
-      return (reader.readString(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 4:
+      return (reader.readString(offset)) as P;
+    case 5:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -2768,57 +2776,57 @@ void _itemFamilyAttach(IsarCollection<dynamic> col, Id id, ItemFamily object) {
 }
 
 extension ItemFamilyByIndex on IsarCollection<ItemFamily> {
-  Future<ItemFamily?> getByFamilyId(String familyId) {
-    return getByIndex(r'familyId', [familyId]);
+  Future<ItemFamily?> getByFamilyCode(int familyCode) {
+    return getByIndex(r'familyCode', [familyCode]);
   }
 
-  ItemFamily? getByFamilyIdSync(String familyId) {
-    return getByIndexSync(r'familyId', [familyId]);
+  ItemFamily? getByFamilyCodeSync(int familyCode) {
+    return getByIndexSync(r'familyCode', [familyCode]);
   }
 
-  Future<bool> deleteByFamilyId(String familyId) {
-    return deleteByIndex(r'familyId', [familyId]);
+  Future<bool> deleteByFamilyCode(int familyCode) {
+    return deleteByIndex(r'familyCode', [familyCode]);
   }
 
-  bool deleteByFamilyIdSync(String familyId) {
-    return deleteByIndexSync(r'familyId', [familyId]);
+  bool deleteByFamilyCodeSync(int familyCode) {
+    return deleteByIndexSync(r'familyCode', [familyCode]);
   }
 
-  Future<List<ItemFamily?>> getAllByFamilyId(List<String> familyIdValues) {
-    final values = familyIdValues.map((e) => [e]).toList();
-    return getAllByIndex(r'familyId', values);
+  Future<List<ItemFamily?>> getAllByFamilyCode(List<int> familyCodeValues) {
+    final values = familyCodeValues.map((e) => [e]).toList();
+    return getAllByIndex(r'familyCode', values);
   }
 
-  List<ItemFamily?> getAllByFamilyIdSync(List<String> familyIdValues) {
-    final values = familyIdValues.map((e) => [e]).toList();
-    return getAllByIndexSync(r'familyId', values);
+  List<ItemFamily?> getAllByFamilyCodeSync(List<int> familyCodeValues) {
+    final values = familyCodeValues.map((e) => [e]).toList();
+    return getAllByIndexSync(r'familyCode', values);
   }
 
-  Future<int> deleteAllByFamilyId(List<String> familyIdValues) {
-    final values = familyIdValues.map((e) => [e]).toList();
-    return deleteAllByIndex(r'familyId', values);
+  Future<int> deleteAllByFamilyCode(List<int> familyCodeValues) {
+    final values = familyCodeValues.map((e) => [e]).toList();
+    return deleteAllByIndex(r'familyCode', values);
   }
 
-  int deleteAllByFamilyIdSync(List<String> familyIdValues) {
-    final values = familyIdValues.map((e) => [e]).toList();
-    return deleteAllByIndexSync(r'familyId', values);
+  int deleteAllByFamilyCodeSync(List<int> familyCodeValues) {
+    final values = familyCodeValues.map((e) => [e]).toList();
+    return deleteAllByIndexSync(r'familyCode', values);
   }
 
-  Future<Id> putByFamilyId(ItemFamily object) {
-    return putByIndex(r'familyId', object);
+  Future<Id> putByFamilyCode(ItemFamily object) {
+    return putByIndex(r'familyCode', object);
   }
 
-  Id putByFamilyIdSync(ItemFamily object, {bool saveLinks = true}) {
-    return putByIndexSync(r'familyId', object, saveLinks: saveLinks);
+  Id putByFamilyCodeSync(ItemFamily object, {bool saveLinks = true}) {
+    return putByIndexSync(r'familyCode', object, saveLinks: saveLinks);
   }
 
-  Future<List<Id>> putAllByFamilyId(List<ItemFamily> objects) {
-    return putAllByIndex(r'familyId', objects);
+  Future<List<Id>> putAllByFamilyCode(List<ItemFamily> objects) {
+    return putAllByIndex(r'familyCode', objects);
   }
 
-  List<Id> putAllByFamilyIdSync(List<ItemFamily> objects,
+  List<Id> putAllByFamilyCodeSync(List<ItemFamily> objects,
       {bool saveLinks = true}) {
-    return putAllByIndexSync(r'familyId', objects, saveLinks: saveLinks);
+    return putAllByIndexSync(r'familyCode', objects, saveLinks: saveLinks);
   }
 }
 
@@ -2827,6 +2835,14 @@ extension ItemFamilyQueryWhereSort
   QueryBuilder<ItemFamily, ItemFamily, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
+    });
+  }
+
+  QueryBuilder<ItemFamily, ItemFamily, QAfterWhere> anyFamilyCode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'familyCode'),
+      );
     });
   }
 }
@@ -2898,48 +2914,93 @@ extension ItemFamilyQueryWhere
     });
   }
 
-  QueryBuilder<ItemFamily, ItemFamily, QAfterWhereClause> familyIdEqualTo(
-      String familyId) {
+  QueryBuilder<ItemFamily, ItemFamily, QAfterWhereClause> familyCodeEqualTo(
+      int familyCode) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'familyId',
-        value: [familyId],
+        indexName: r'familyCode',
+        value: [familyCode],
       ));
     });
   }
 
-  QueryBuilder<ItemFamily, ItemFamily, QAfterWhereClause> familyIdNotEqualTo(
-      String familyId) {
+  QueryBuilder<ItemFamily, ItemFamily, QAfterWhereClause> familyCodeNotEqualTo(
+      int familyCode) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'familyId',
+              indexName: r'familyCode',
               lower: [],
-              upper: [familyId],
+              upper: [familyCode],
               includeUpper: false,
             ))
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'familyId',
-              lower: [familyId],
+              indexName: r'familyCode',
+              lower: [familyCode],
               includeLower: false,
               upper: [],
             ));
       } else {
         return query
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'familyId',
-              lower: [familyId],
+              indexName: r'familyCode',
+              lower: [familyCode],
               includeLower: false,
               upper: [],
             ))
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'familyId',
+              indexName: r'familyCode',
               lower: [],
-              upper: [familyId],
+              upper: [familyCode],
               includeUpper: false,
             ));
       }
+    });
+  }
+
+  QueryBuilder<ItemFamily, ItemFamily, QAfterWhereClause> familyCodeGreaterThan(
+    int familyCode, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'familyCode',
+        lower: [familyCode],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<ItemFamily, ItemFamily, QAfterWhereClause> familyCodeLessThan(
+    int familyCode, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'familyCode',
+        lower: [],
+        upper: [familyCode],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<ItemFamily, ItemFamily, QAfterWhereClause> familyCodeBetween(
+    int lowerFamilyCode,
+    int upperFamilyCode, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'familyCode',
+        lower: [lowerFamilyCode],
+        includeLower: includeLower,
+        upper: [upperFamilyCode],
+        includeUpper: includeUpper,
+      ));
     });
   }
 
@@ -3037,6 +3098,62 @@ extension ItemFamilyQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'createdAt',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<ItemFamily, ItemFamily, QAfterFilterCondition>
+      currentMaxSequenceEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'currentMaxSequence',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ItemFamily, ItemFamily, QAfterFilterCondition>
+      currentMaxSequenceGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'currentMaxSequence',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ItemFamily, ItemFamily, QAfterFilterCondition>
+      currentMaxSequenceLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'currentMaxSequence',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ItemFamily, ItemFamily, QAfterFilterCondition>
+      currentMaxSequenceBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'currentMaxSequence',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -3199,136 +3316,57 @@ extension ItemFamilyQueryFilter
     });
   }
 
-  QueryBuilder<ItemFamily, ItemFamily, QAfterFilterCondition> familyIdEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<ItemFamily, ItemFamily, QAfterFilterCondition> familyCodeEqualTo(
+      int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'familyId',
+        property: r'familyCode',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<ItemFamily, ItemFamily, QAfterFilterCondition>
-      familyIdGreaterThan(
-    String value, {
+      familyCodeGreaterThan(
+    int value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'familyId',
+        property: r'familyCode',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<ItemFamily, ItemFamily, QAfterFilterCondition> familyIdLessThan(
-    String value, {
+  QueryBuilder<ItemFamily, ItemFamily, QAfterFilterCondition>
+      familyCodeLessThan(
+    int value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'familyId',
+        property: r'familyCode',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<ItemFamily, ItemFamily, QAfterFilterCondition> familyIdBetween(
-    String lower,
-    String upper, {
+  QueryBuilder<ItemFamily, ItemFamily, QAfterFilterCondition> familyCodeBetween(
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'familyId',
+        property: r'familyCode',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ItemFamily, ItemFamily, QAfterFilterCondition>
-      familyIdStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'familyId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ItemFamily, ItemFamily, QAfterFilterCondition> familyIdEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'familyId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ItemFamily, ItemFamily, QAfterFilterCondition> familyIdContains(
-      String value,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'familyId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ItemFamily, ItemFamily, QAfterFilterCondition> familyIdMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'familyId',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ItemFamily, ItemFamily, QAfterFilterCondition>
-      familyIdIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'familyId',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<ItemFamily, ItemFamily, QAfterFilterCondition>
-      familyIdIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'familyId',
-        value: '',
       ));
     });
   }
@@ -3668,6 +3706,20 @@ extension ItemFamilyQuerySortBy
     });
   }
 
+  QueryBuilder<ItemFamily, ItemFamily, QAfterSortBy>
+      sortByCurrentMaxSequence() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'currentMaxSequence', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ItemFamily, ItemFamily, QAfterSortBy>
+      sortByCurrentMaxSequenceDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'currentMaxSequence', Sort.desc);
+    });
+  }
+
   QueryBuilder<ItemFamily, ItemFamily, QAfterSortBy> sortByDescription() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'description', Sort.asc);
@@ -3680,15 +3732,15 @@ extension ItemFamilyQuerySortBy
     });
   }
 
-  QueryBuilder<ItemFamily, ItemFamily, QAfterSortBy> sortByFamilyId() {
+  QueryBuilder<ItemFamily, ItemFamily, QAfterSortBy> sortByFamilyCode() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'familyId', Sort.asc);
+      return query.addSortBy(r'familyCode', Sort.asc);
     });
   }
 
-  QueryBuilder<ItemFamily, ItemFamily, QAfterSortBy> sortByFamilyIdDesc() {
+  QueryBuilder<ItemFamily, ItemFamily, QAfterSortBy> sortByFamilyCodeDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'familyId', Sort.desc);
+      return query.addSortBy(r'familyCode', Sort.desc);
     });
   }
 
@@ -3731,6 +3783,20 @@ extension ItemFamilyQuerySortThenBy
     });
   }
 
+  QueryBuilder<ItemFamily, ItemFamily, QAfterSortBy>
+      thenByCurrentMaxSequence() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'currentMaxSequence', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ItemFamily, ItemFamily, QAfterSortBy>
+      thenByCurrentMaxSequenceDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'currentMaxSequence', Sort.desc);
+    });
+  }
+
   QueryBuilder<ItemFamily, ItemFamily, QAfterSortBy> thenByDescription() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'description', Sort.asc);
@@ -3743,15 +3809,15 @@ extension ItemFamilyQuerySortThenBy
     });
   }
 
-  QueryBuilder<ItemFamily, ItemFamily, QAfterSortBy> thenByFamilyId() {
+  QueryBuilder<ItemFamily, ItemFamily, QAfterSortBy> thenByFamilyCode() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'familyId', Sort.asc);
+      return query.addSortBy(r'familyCode', Sort.asc);
     });
   }
 
-  QueryBuilder<ItemFamily, ItemFamily, QAfterSortBy> thenByFamilyIdDesc() {
+  QueryBuilder<ItemFamily, ItemFamily, QAfterSortBy> thenByFamilyCodeDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'familyId', Sort.desc);
+      return query.addSortBy(r'familyCode', Sort.desc);
     });
   }
 
@@ -3800,6 +3866,13 @@ extension ItemFamilyQueryWhereDistinct
     });
   }
 
+  QueryBuilder<ItemFamily, ItemFamily, QDistinct>
+      distinctByCurrentMaxSequence() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'currentMaxSequence');
+    });
+  }
+
   QueryBuilder<ItemFamily, ItemFamily, QDistinct> distinctByDescription(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -3807,10 +3880,9 @@ extension ItemFamilyQueryWhereDistinct
     });
   }
 
-  QueryBuilder<ItemFamily, ItemFamily, QDistinct> distinctByFamilyId(
-      {bool caseSensitive = true}) {
+  QueryBuilder<ItemFamily, ItemFamily, QDistinct> distinctByFamilyCode() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'familyId', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'familyCode');
     });
   }
 
@@ -3843,15 +3915,21 @@ extension ItemFamilyQueryProperty
     });
   }
 
+  QueryBuilder<ItemFamily, int, QQueryOperations> currentMaxSequenceProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'currentMaxSequence');
+    });
+  }
+
   QueryBuilder<ItemFamily, String?, QQueryOperations> descriptionProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'description');
     });
   }
 
-  QueryBuilder<ItemFamily, String, QQueryOperations> familyIdProperty() {
+  QueryBuilder<ItemFamily, int, QQueryOperations> familyCodeProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'familyId');
+      return query.addPropertyName(r'familyCode');
     });
   }
 
@@ -3889,10 +3967,10 @@ const ItemSchema = CollectionSchema(
       name: r'deletedAt',
       type: IsarType.dateTime,
     ),
-    r'familyId': PropertySchema(
+    r'familyCode': PropertySchema(
       id: 2,
-      name: r'familyId',
-      type: IsarType.string,
+      name: r'familyCode',
+      type: IsarType.long,
     ),
     r'isActive': PropertySchema(
       id: 3,
@@ -3904,10 +3982,10 @@ const ItemSchema = CollectionSchema(
       name: r'isDeleted',
       type: IsarType.bool,
     ),
-    r'itemId': PropertySchema(
+    r'itemCode': PropertySchema(
       id: 5,
-      name: r'itemId',
-      type: IsarType.string,
+      name: r'itemCode',
+      type: IsarType.long,
     ),
     r'lastSoldAt': PropertySchema(
       id: 6,
@@ -3951,29 +4029,29 @@ const ItemSchema = CollectionSchema(
   deserializeProp: _itemDeserializeProp,
   idName: r'id',
   indexes: {
-    r'itemId': IndexSchema(
-      id: -5342806140158601489,
-      name: r'itemId',
+    r'itemCode': IndexSchema(
+      id: -1692757059073837553,
+      name: r'itemCode',
       unique: true,
       replace: false,
       properties: [
         IndexPropertySchema(
-          name: r'itemId',
-          type: IndexType.hash,
-          caseSensitive: true,
+          name: r'itemCode',
+          type: IndexType.value,
+          caseSensitive: false,
         )
       ],
     ),
-    r'familyId': IndexSchema(
-      id: 928332670682933091,
-      name: r'familyId',
+    r'familyCode': IndexSchema(
+      id: 242092215659102643,
+      name: r'familyCode',
       unique: false,
       replace: false,
       properties: [
         IndexPropertySchema(
-          name: r'familyId',
-          type: IndexType.hash,
-          caseSensitive: true,
+          name: r'familyCode',
+          type: IndexType.value,
+          caseSensitive: false,
         )
       ],
     ),
@@ -4005,8 +4083,6 @@ int _itemEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  bytesCount += 3 + object.familyId.length * 3;
-  bytesCount += 3 + object.itemId.length * 3;
   bytesCount += 3 + object.name.length * 3;
   bytesCount += 3 + object.shopId.length * 3;
   return bytesCount;
@@ -4020,10 +4096,10 @@ void _itemSerialize(
 ) {
   writer.writeDateTime(offsets[0], object.createdAt);
   writer.writeDateTime(offsets[1], object.deletedAt);
-  writer.writeString(offsets[2], object.familyId);
+  writer.writeLong(offsets[2], object.familyCode);
   writer.writeBool(offsets[3], object.isActive);
   writer.writeBool(offsets[4], object.isDeleted);
-  writer.writeString(offsets[5], object.itemId);
+  writer.writeLong(offsets[5], object.itemCode);
   writer.writeDateTime(offsets[6], object.lastSoldAt);
   writer.writeLong(offsets[7], object.minQuantity);
   writer.writeString(offsets[8], object.name);
@@ -4042,11 +4118,11 @@ Item _itemDeserialize(
   final object = Item();
   object.createdAt = reader.readDateTime(offsets[0]);
   object.deletedAt = reader.readDateTimeOrNull(offsets[1]);
-  object.familyId = reader.readString(offsets[2]);
+  object.familyCode = reader.readLong(offsets[2]);
   object.id = id;
   object.isActive = reader.readBool(offsets[3]);
   object.isDeleted = reader.readBool(offsets[4]);
-  object.itemId = reader.readString(offsets[5]);
+  object.itemCode = reader.readLong(offsets[5]);
   object.lastSoldAt = reader.readDateTimeOrNull(offsets[6]);
   object.minQuantity = reader.readLong(offsets[7]);
   object.name = reader.readString(offsets[8]);
@@ -4069,13 +4145,13 @@ P _itemDeserializeProp<P>(
     case 1:
       return (reader.readDateTimeOrNull(offset)) as P;
     case 2:
-      return (reader.readString(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 3:
       return (reader.readBool(offset)) as P;
     case 4:
       return (reader.readBool(offset)) as P;
     case 5:
-      return (reader.readString(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 6:
       return (reader.readDateTimeOrNull(offset)) as P;
     case 7:
@@ -4108,56 +4184,56 @@ void _itemAttach(IsarCollection<dynamic> col, Id id, Item object) {
 }
 
 extension ItemByIndex on IsarCollection<Item> {
-  Future<Item?> getByItemId(String itemId) {
-    return getByIndex(r'itemId', [itemId]);
+  Future<Item?> getByItemCode(int itemCode) {
+    return getByIndex(r'itemCode', [itemCode]);
   }
 
-  Item? getByItemIdSync(String itemId) {
-    return getByIndexSync(r'itemId', [itemId]);
+  Item? getByItemCodeSync(int itemCode) {
+    return getByIndexSync(r'itemCode', [itemCode]);
   }
 
-  Future<bool> deleteByItemId(String itemId) {
-    return deleteByIndex(r'itemId', [itemId]);
+  Future<bool> deleteByItemCode(int itemCode) {
+    return deleteByIndex(r'itemCode', [itemCode]);
   }
 
-  bool deleteByItemIdSync(String itemId) {
-    return deleteByIndexSync(r'itemId', [itemId]);
+  bool deleteByItemCodeSync(int itemCode) {
+    return deleteByIndexSync(r'itemCode', [itemCode]);
   }
 
-  Future<List<Item?>> getAllByItemId(List<String> itemIdValues) {
-    final values = itemIdValues.map((e) => [e]).toList();
-    return getAllByIndex(r'itemId', values);
+  Future<List<Item?>> getAllByItemCode(List<int> itemCodeValues) {
+    final values = itemCodeValues.map((e) => [e]).toList();
+    return getAllByIndex(r'itemCode', values);
   }
 
-  List<Item?> getAllByItemIdSync(List<String> itemIdValues) {
-    final values = itemIdValues.map((e) => [e]).toList();
-    return getAllByIndexSync(r'itemId', values);
+  List<Item?> getAllByItemCodeSync(List<int> itemCodeValues) {
+    final values = itemCodeValues.map((e) => [e]).toList();
+    return getAllByIndexSync(r'itemCode', values);
   }
 
-  Future<int> deleteAllByItemId(List<String> itemIdValues) {
-    final values = itemIdValues.map((e) => [e]).toList();
-    return deleteAllByIndex(r'itemId', values);
+  Future<int> deleteAllByItemCode(List<int> itemCodeValues) {
+    final values = itemCodeValues.map((e) => [e]).toList();
+    return deleteAllByIndex(r'itemCode', values);
   }
 
-  int deleteAllByItemIdSync(List<String> itemIdValues) {
-    final values = itemIdValues.map((e) => [e]).toList();
-    return deleteAllByIndexSync(r'itemId', values);
+  int deleteAllByItemCodeSync(List<int> itemCodeValues) {
+    final values = itemCodeValues.map((e) => [e]).toList();
+    return deleteAllByIndexSync(r'itemCode', values);
   }
 
-  Future<Id> putByItemId(Item object) {
-    return putByIndex(r'itemId', object);
+  Future<Id> putByItemCode(Item object) {
+    return putByIndex(r'itemCode', object);
   }
 
-  Id putByItemIdSync(Item object, {bool saveLinks = true}) {
-    return putByIndexSync(r'itemId', object, saveLinks: saveLinks);
+  Id putByItemCodeSync(Item object, {bool saveLinks = true}) {
+    return putByIndexSync(r'itemCode', object, saveLinks: saveLinks);
   }
 
-  Future<List<Id>> putAllByItemId(List<Item> objects) {
-    return putAllByIndex(r'itemId', objects);
+  Future<List<Id>> putAllByItemCode(List<Item> objects) {
+    return putAllByIndex(r'itemCode', objects);
   }
 
-  List<Id> putAllByItemIdSync(List<Item> objects, {bool saveLinks = true}) {
-    return putAllByIndexSync(r'itemId', objects, saveLinks: saveLinks);
+  List<Id> putAllByItemCodeSync(List<Item> objects, {bool saveLinks = true}) {
+    return putAllByIndexSync(r'itemCode', objects, saveLinks: saveLinks);
   }
 }
 
@@ -4165,6 +4241,22 @@ extension ItemQueryWhereSort on QueryBuilder<Item, Item, QWhere> {
   QueryBuilder<Item, Item, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
+    });
+  }
+
+  QueryBuilder<Item, Item, QAfterWhere> anyItemCode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'itemCode'),
+      );
+    });
+  }
+
+  QueryBuilder<Item, Item, QAfterWhere> anyFamilyCode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'familyCode'),
+      );
     });
   }
 }
@@ -4235,90 +4327,181 @@ extension ItemQueryWhere on QueryBuilder<Item, Item, QWhereClause> {
     });
   }
 
-  QueryBuilder<Item, Item, QAfterWhereClause> itemIdEqualTo(String itemId) {
+  QueryBuilder<Item, Item, QAfterWhereClause> itemCodeEqualTo(int itemCode) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'itemId',
-        value: [itemId],
+        indexName: r'itemCode',
+        value: [itemCode],
       ));
     });
   }
 
-  QueryBuilder<Item, Item, QAfterWhereClause> itemIdNotEqualTo(String itemId) {
+  QueryBuilder<Item, Item, QAfterWhereClause> itemCodeNotEqualTo(int itemCode) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'itemId',
+              indexName: r'itemCode',
               lower: [],
-              upper: [itemId],
+              upper: [itemCode],
               includeUpper: false,
             ))
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'itemId',
-              lower: [itemId],
+              indexName: r'itemCode',
+              lower: [itemCode],
               includeLower: false,
               upper: [],
             ));
       } else {
         return query
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'itemId',
-              lower: [itemId],
+              indexName: r'itemCode',
+              lower: [itemCode],
               includeLower: false,
               upper: [],
             ))
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'itemId',
+              indexName: r'itemCode',
               lower: [],
-              upper: [itemId],
+              upper: [itemCode],
               includeUpper: false,
             ));
       }
     });
   }
 
-  QueryBuilder<Item, Item, QAfterWhereClause> familyIdEqualTo(String familyId) {
+  QueryBuilder<Item, Item, QAfterWhereClause> itemCodeGreaterThan(
+    int itemCode, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'familyId',
-        value: [familyId],
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'itemCode',
+        lower: [itemCode],
+        includeLower: include,
+        upper: [],
       ));
     });
   }
 
-  QueryBuilder<Item, Item, QAfterWhereClause> familyIdNotEqualTo(
-      String familyId) {
+  QueryBuilder<Item, Item, QAfterWhereClause> itemCodeLessThan(
+    int itemCode, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'itemCode',
+        lower: [],
+        upper: [itemCode],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<Item, Item, QAfterWhereClause> itemCodeBetween(
+    int lowerItemCode,
+    int upperItemCode, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'itemCode',
+        lower: [lowerItemCode],
+        includeLower: includeLower,
+        upper: [upperItemCode],
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Item, Item, QAfterWhereClause> familyCodeEqualTo(
+      int familyCode) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'familyCode',
+        value: [familyCode],
+      ));
+    });
+  }
+
+  QueryBuilder<Item, Item, QAfterWhereClause> familyCodeNotEqualTo(
+      int familyCode) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'familyId',
+              indexName: r'familyCode',
               lower: [],
-              upper: [familyId],
+              upper: [familyCode],
               includeUpper: false,
             ))
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'familyId',
-              lower: [familyId],
+              indexName: r'familyCode',
+              lower: [familyCode],
               includeLower: false,
               upper: [],
             ));
       } else {
         return query
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'familyId',
-              lower: [familyId],
+              indexName: r'familyCode',
+              lower: [familyCode],
               includeLower: false,
               upper: [],
             ))
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'familyId',
+              indexName: r'familyCode',
               lower: [],
-              upper: [familyId],
+              upper: [familyCode],
               includeUpper: false,
             ));
       }
+    });
+  }
+
+  QueryBuilder<Item, Item, QAfterWhereClause> familyCodeGreaterThan(
+    int familyCode, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'familyCode',
+        lower: [familyCode],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<Item, Item, QAfterWhereClause> familyCodeLessThan(
+    int familyCode, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'familyCode',
+        lower: [],
+        upper: [familyCode],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<Item, Item, QAfterWhereClause> familyCodeBetween(
+    int lowerFamilyCode,
+    int upperFamilyCode, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'familyCode',
+        lower: [lowerFamilyCode],
+        includeLower: includeLower,
+        upper: [upperFamilyCode],
+        includeUpper: includeUpper,
+      ));
     });
   }
 
@@ -4489,131 +4672,54 @@ extension ItemQueryFilter on QueryBuilder<Item, Item, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Item, Item, QAfterFilterCondition> familyIdEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<Item, Item, QAfterFilterCondition> familyCodeEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'familyId',
+        property: r'familyCode',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Item, Item, QAfterFilterCondition> familyIdGreaterThan(
-    String value, {
+  QueryBuilder<Item, Item, QAfterFilterCondition> familyCodeGreaterThan(
+    int value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'familyId',
+        property: r'familyCode',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Item, Item, QAfterFilterCondition> familyIdLessThan(
-    String value, {
+  QueryBuilder<Item, Item, QAfterFilterCondition> familyCodeLessThan(
+    int value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'familyId',
+        property: r'familyCode',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Item, Item, QAfterFilterCondition> familyIdBetween(
-    String lower,
-    String upper, {
+  QueryBuilder<Item, Item, QAfterFilterCondition> familyCodeBetween(
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'familyId',
+        property: r'familyCode',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Item, Item, QAfterFilterCondition> familyIdStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'familyId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Item, Item, QAfterFilterCondition> familyIdEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'familyId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Item, Item, QAfterFilterCondition> familyIdContains(String value,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'familyId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Item, Item, QAfterFilterCondition> familyIdMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'familyId',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Item, Item, QAfterFilterCondition> familyIdIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'familyId',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Item, Item, QAfterFilterCondition> familyIdIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'familyId',
-        value: '',
       ));
     });
   }
@@ -4688,130 +4794,54 @@ extension ItemQueryFilter on QueryBuilder<Item, Item, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Item, Item, QAfterFilterCondition> itemIdEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<Item, Item, QAfterFilterCondition> itemCodeEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'itemId',
+        property: r'itemCode',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Item, Item, QAfterFilterCondition> itemIdGreaterThan(
-    String value, {
+  QueryBuilder<Item, Item, QAfterFilterCondition> itemCodeGreaterThan(
+    int value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'itemId',
+        property: r'itemCode',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Item, Item, QAfterFilterCondition> itemIdLessThan(
-    String value, {
+  QueryBuilder<Item, Item, QAfterFilterCondition> itemCodeLessThan(
+    int value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'itemId',
+        property: r'itemCode',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Item, Item, QAfterFilterCondition> itemIdBetween(
-    String lower,
-    String upper, {
+  QueryBuilder<Item, Item, QAfterFilterCondition> itemCodeBetween(
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'itemId',
+        property: r'itemCode',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Item, Item, QAfterFilterCondition> itemIdStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'itemId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Item, Item, QAfterFilterCondition> itemIdEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'itemId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Item, Item, QAfterFilterCondition> itemIdContains(String value,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'itemId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Item, Item, QAfterFilterCondition> itemIdMatches(String pattern,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'itemId',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Item, Item, QAfterFilterCondition> itemIdIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'itemId',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Item, Item, QAfterFilterCondition> itemIdIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'itemId',
-        value: '',
       ));
     });
   }
@@ -5391,15 +5421,15 @@ extension ItemQuerySortBy on QueryBuilder<Item, Item, QSortBy> {
     });
   }
 
-  QueryBuilder<Item, Item, QAfterSortBy> sortByFamilyId() {
+  QueryBuilder<Item, Item, QAfterSortBy> sortByFamilyCode() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'familyId', Sort.asc);
+      return query.addSortBy(r'familyCode', Sort.asc);
     });
   }
 
-  QueryBuilder<Item, Item, QAfterSortBy> sortByFamilyIdDesc() {
+  QueryBuilder<Item, Item, QAfterSortBy> sortByFamilyCodeDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'familyId', Sort.desc);
+      return query.addSortBy(r'familyCode', Sort.desc);
     });
   }
 
@@ -5427,15 +5457,15 @@ extension ItemQuerySortBy on QueryBuilder<Item, Item, QSortBy> {
     });
   }
 
-  QueryBuilder<Item, Item, QAfterSortBy> sortByItemId() {
+  QueryBuilder<Item, Item, QAfterSortBy> sortByItemCode() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'itemId', Sort.asc);
+      return query.addSortBy(r'itemCode', Sort.asc);
     });
   }
 
-  QueryBuilder<Item, Item, QAfterSortBy> sortByItemIdDesc() {
+  QueryBuilder<Item, Item, QAfterSortBy> sortByItemCodeDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'itemId', Sort.desc);
+      return query.addSortBy(r'itemCode', Sort.desc);
     });
   }
 
@@ -5549,15 +5579,15 @@ extension ItemQuerySortThenBy on QueryBuilder<Item, Item, QSortThenBy> {
     });
   }
 
-  QueryBuilder<Item, Item, QAfterSortBy> thenByFamilyId() {
+  QueryBuilder<Item, Item, QAfterSortBy> thenByFamilyCode() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'familyId', Sort.asc);
+      return query.addSortBy(r'familyCode', Sort.asc);
     });
   }
 
-  QueryBuilder<Item, Item, QAfterSortBy> thenByFamilyIdDesc() {
+  QueryBuilder<Item, Item, QAfterSortBy> thenByFamilyCodeDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'familyId', Sort.desc);
+      return query.addSortBy(r'familyCode', Sort.desc);
     });
   }
 
@@ -5597,15 +5627,15 @@ extension ItemQuerySortThenBy on QueryBuilder<Item, Item, QSortThenBy> {
     });
   }
 
-  QueryBuilder<Item, Item, QAfterSortBy> thenByItemId() {
+  QueryBuilder<Item, Item, QAfterSortBy> thenByItemCode() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'itemId', Sort.asc);
+      return query.addSortBy(r'itemCode', Sort.asc);
     });
   }
 
-  QueryBuilder<Item, Item, QAfterSortBy> thenByItemIdDesc() {
+  QueryBuilder<Item, Item, QAfterSortBy> thenByItemCodeDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'itemId', Sort.desc);
+      return query.addSortBy(r'itemCode', Sort.desc);
     });
   }
 
@@ -5707,10 +5737,9 @@ extension ItemQueryWhereDistinct on QueryBuilder<Item, Item, QDistinct> {
     });
   }
 
-  QueryBuilder<Item, Item, QDistinct> distinctByFamilyId(
-      {bool caseSensitive = true}) {
+  QueryBuilder<Item, Item, QDistinct> distinctByFamilyCode() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'familyId', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'familyCode');
     });
   }
 
@@ -5726,10 +5755,9 @@ extension ItemQueryWhereDistinct on QueryBuilder<Item, Item, QDistinct> {
     });
   }
 
-  QueryBuilder<Item, Item, QDistinct> distinctByItemId(
-      {bool caseSensitive = true}) {
+  QueryBuilder<Item, Item, QDistinct> distinctByItemCode() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'itemId', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'itemCode');
     });
   }
 
@@ -5797,9 +5825,9 @@ extension ItemQueryProperty on QueryBuilder<Item, Item, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Item, String, QQueryOperations> familyIdProperty() {
+  QueryBuilder<Item, int, QQueryOperations> familyCodeProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'familyId');
+      return query.addPropertyName(r'familyCode');
     });
   }
 
@@ -5815,9 +5843,9 @@ extension ItemQueryProperty on QueryBuilder<Item, Item, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Item, String, QQueryOperations> itemIdProperty() {
+  QueryBuilder<Item, int, QQueryOperations> itemCodeProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'itemId');
+      return query.addPropertyName(r'itemCode');
     });
   }
 
@@ -5897,10 +5925,10 @@ const AttributeDefinitionSchema = CollectionSchema(
       name: r'dropdownOptions',
       type: IsarType.stringList,
     ),
-    r'familyId': PropertySchema(
+    r'familyCode': PropertySchema(
       id: 4,
-      name: r'familyId',
-      type: IsarType.string,
+      name: r'familyCode',
+      type: IsarType.long,
     ),
     r'isRequired': PropertySchema(
       id: 5,
@@ -5919,16 +5947,16 @@ const AttributeDefinitionSchema = CollectionSchema(
   deserializeProp: _attributeDefinitionDeserializeProp,
   idName: r'id',
   indexes: {
-    r'familyId': IndexSchema(
-      id: 928332670682933091,
-      name: r'familyId',
+    r'familyCode': IndexSchema(
+      id: 242092215659102643,
+      name: r'familyCode',
       unique: false,
       replace: false,
       properties: [
         IndexPropertySchema(
-          name: r'familyId',
-          type: IndexType.hash,
-          caseSensitive: true,
+          name: r'familyCode',
+          type: IndexType.value,
+          caseSensitive: false,
         )
       ],
     )
@@ -5960,7 +5988,6 @@ int _attributeDefinitionEstimateSize(
       }
     }
   }
-  bytesCount += 3 + object.familyId.length * 3;
   bytesCount += 3 + object.name.length * 3;
   return bytesCount;
 }
@@ -5975,7 +6002,7 @@ void _attributeDefinitionSerialize(
   writer.writeString(offsets[1], object.dataType.name);
   writer.writeLong(offsets[2], object.displayOrder);
   writer.writeStringList(offsets[3], object.dropdownOptions);
-  writer.writeString(offsets[4], object.familyId);
+  writer.writeLong(offsets[4], object.familyCode);
   writer.writeBool(offsets[5], object.isRequired);
   writer.writeString(offsets[6], object.name);
 }
@@ -5993,7 +6020,7 @@ AttributeDefinition _attributeDefinitionDeserialize(
       AttributeDataType.TEXT;
   object.displayOrder = reader.readLong(offsets[2]);
   object.dropdownOptions = reader.readStringList(offsets[3]);
-  object.familyId = reader.readString(offsets[4]);
+  object.familyCode = reader.readLong(offsets[4]);
   object.id = id;
   object.isRequired = reader.readBool(offsets[5]);
   object.name = reader.readString(offsets[6]);
@@ -6018,7 +6045,7 @@ P _attributeDefinitionDeserializeProp<P>(
     case 3:
       return (reader.readStringList(offset)) as P;
     case 4:
-      return (reader.readString(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 5:
       return (reader.readBool(offset)) as P;
     case 6:
@@ -6062,6 +6089,15 @@ extension AttributeDefinitionQueryWhereSort
   QueryBuilder<AttributeDefinition, AttributeDefinition, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
+    });
+  }
+
+  QueryBuilder<AttributeDefinition, AttributeDefinition, QAfterWhere>
+      anyFamilyCode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'familyCode'),
+      );
     });
   }
 }
@@ -6137,47 +6173,95 @@ extension AttributeDefinitionQueryWhere
   }
 
   QueryBuilder<AttributeDefinition, AttributeDefinition, QAfterWhereClause>
-      familyIdEqualTo(String familyId) {
+      familyCodeEqualTo(int familyCode) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'familyId',
-        value: [familyId],
+        indexName: r'familyCode',
+        value: [familyCode],
       ));
     });
   }
 
   QueryBuilder<AttributeDefinition, AttributeDefinition, QAfterWhereClause>
-      familyIdNotEqualTo(String familyId) {
+      familyCodeNotEqualTo(int familyCode) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'familyId',
+              indexName: r'familyCode',
               lower: [],
-              upper: [familyId],
+              upper: [familyCode],
               includeUpper: false,
             ))
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'familyId',
-              lower: [familyId],
+              indexName: r'familyCode',
+              lower: [familyCode],
               includeLower: false,
               upper: [],
             ));
       } else {
         return query
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'familyId',
-              lower: [familyId],
+              indexName: r'familyCode',
+              lower: [familyCode],
               includeLower: false,
               upper: [],
             ))
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'familyId',
+              indexName: r'familyCode',
               lower: [],
-              upper: [familyId],
+              upper: [familyCode],
               includeUpper: false,
             ));
       }
+    });
+  }
+
+  QueryBuilder<AttributeDefinition, AttributeDefinition, QAfterWhereClause>
+      familyCodeGreaterThan(
+    int familyCode, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'familyCode',
+        lower: [familyCode],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<AttributeDefinition, AttributeDefinition, QAfterWhereClause>
+      familyCodeLessThan(
+    int familyCode, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'familyCode',
+        lower: [],
+        upper: [familyCode],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<AttributeDefinition, AttributeDefinition, QAfterWhereClause>
+      familyCodeBetween(
+    int lowerFamilyCode,
+    int upperFamilyCode, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'familyCode',
+        lower: [lowerFamilyCode],
+        includeLower: includeLower,
+        upper: [upperFamilyCode],
+        includeUpper: includeUpper,
+      ));
     });
   }
 }
@@ -6678,137 +6762,57 @@ extension AttributeDefinitionQueryFilter on QueryBuilder<AttributeDefinition,
   }
 
   QueryBuilder<AttributeDefinition, AttributeDefinition, QAfterFilterCondition>
-      familyIdEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      familyCodeEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'familyId',
+        property: r'familyCode',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<AttributeDefinition, AttributeDefinition, QAfterFilterCondition>
-      familyIdGreaterThan(
-    String value, {
+      familyCodeGreaterThan(
+    int value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'familyId',
+        property: r'familyCode',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<AttributeDefinition, AttributeDefinition, QAfterFilterCondition>
-      familyIdLessThan(
-    String value, {
+      familyCodeLessThan(
+    int value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'familyId',
+        property: r'familyCode',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<AttributeDefinition, AttributeDefinition, QAfterFilterCondition>
-      familyIdBetween(
-    String lower,
-    String upper, {
+      familyCodeBetween(
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'familyId',
+        property: r'familyCode',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<AttributeDefinition, AttributeDefinition, QAfterFilterCondition>
-      familyIdStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'familyId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<AttributeDefinition, AttributeDefinition, QAfterFilterCondition>
-      familyIdEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'familyId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<AttributeDefinition, AttributeDefinition, QAfterFilterCondition>
-      familyIdContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'familyId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<AttributeDefinition, AttributeDefinition, QAfterFilterCondition>
-      familyIdMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'familyId',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<AttributeDefinition, AttributeDefinition, QAfterFilterCondition>
-      familyIdIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'familyId',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<AttributeDefinition, AttributeDefinition, QAfterFilterCondition>
-      familyIdIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'familyId',
-        value: '',
       ));
     });
   }
@@ -7067,16 +7071,16 @@ extension AttributeDefinitionQuerySortBy
   }
 
   QueryBuilder<AttributeDefinition, AttributeDefinition, QAfterSortBy>
-      sortByFamilyId() {
+      sortByFamilyCode() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'familyId', Sort.asc);
+      return query.addSortBy(r'familyCode', Sort.asc);
     });
   }
 
   QueryBuilder<AttributeDefinition, AttributeDefinition, QAfterSortBy>
-      sortByFamilyIdDesc() {
+      sortByFamilyCodeDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'familyId', Sort.desc);
+      return query.addSortBy(r'familyCode', Sort.desc);
     });
   }
 
@@ -7154,16 +7158,16 @@ extension AttributeDefinitionQuerySortThenBy
   }
 
   QueryBuilder<AttributeDefinition, AttributeDefinition, QAfterSortBy>
-      thenByFamilyId() {
+      thenByFamilyCode() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'familyId', Sort.asc);
+      return query.addSortBy(r'familyCode', Sort.asc);
     });
   }
 
   QueryBuilder<AttributeDefinition, AttributeDefinition, QAfterSortBy>
-      thenByFamilyIdDesc() {
+      thenByFamilyCodeDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'familyId', Sort.desc);
+      return query.addSortBy(r'familyCode', Sort.desc);
     });
   }
 
@@ -7241,9 +7245,9 @@ extension AttributeDefinitionQueryWhereDistinct
   }
 
   QueryBuilder<AttributeDefinition, AttributeDefinition, QDistinct>
-      distinctByFamilyId({bool caseSensitive = true}) {
+      distinctByFamilyCode() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'familyId', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'familyCode');
     });
   }
 
@@ -7298,10 +7302,10 @@ extension AttributeDefinitionQueryProperty
     });
   }
 
-  QueryBuilder<AttributeDefinition, String, QQueryOperations>
-      familyIdProperty() {
+  QueryBuilder<AttributeDefinition, int, QQueryOperations>
+      familyCodeProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'familyId');
+      return query.addPropertyName(r'familyCode');
     });
   }
 
@@ -7340,10 +7344,10 @@ const ItemAttributeSchema = CollectionSchema(
       name: r'createdAt',
       type: IsarType.dateTime,
     ),
-    r'itemId': PropertySchema(
+    r'itemCode': PropertySchema(
       id: 2,
-      name: r'itemId',
-      type: IsarType.string,
+      name: r'itemCode',
+      type: IsarType.long,
     ),
     r'updatedAt': PropertySchema(
       id: 3,
@@ -7377,16 +7381,16 @@ const ItemAttributeSchema = CollectionSchema(
   deserializeProp: _itemAttributeDeserializeProp,
   idName: r'id',
   indexes: {
-    r'itemId': IndexSchema(
-      id: -5342806140158601489,
-      name: r'itemId',
+    r'itemCode': IndexSchema(
+      id: -1692757059073837553,
+      name: r'itemCode',
       unique: false,
       replace: false,
       properties: [
         IndexPropertySchema(
-          name: r'itemId',
-          type: IndexType.hash,
-          caseSensitive: true,
+          name: r'itemCode',
+          type: IndexType.value,
+          caseSensitive: false,
         )
       ],
     )
@@ -7405,7 +7409,6 @@ int _itemAttributeEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  bytesCount += 3 + object.itemId.length * 3;
   {
     final value = object.valueDate;
     if (value != null) {
@@ -7429,7 +7432,7 @@ void _itemAttributeSerialize(
 ) {
   writer.writeLong(offsets[0], object.attributeDefinitionId);
   writer.writeDateTime(offsets[1], object.createdAt);
-  writer.writeString(offsets[2], object.itemId);
+  writer.writeLong(offsets[2], object.itemCode);
   writer.writeDateTime(offsets[3], object.updatedAt);
   writer.writeBool(offsets[4], object.valueBoolean);
   writer.writeString(offsets[5], object.valueDate);
@@ -7447,7 +7450,7 @@ ItemAttribute _itemAttributeDeserialize(
   object.attributeDefinitionId = reader.readLong(offsets[0]);
   object.createdAt = reader.readDateTime(offsets[1]);
   object.id = id;
-  object.itemId = reader.readString(offsets[2]);
+  object.itemCode = reader.readLong(offsets[2]);
   object.updatedAt = reader.readDateTime(offsets[3]);
   object.valueBoolean = reader.readBoolOrNull(offsets[4]);
   object.valueDate = reader.readStringOrNull(offsets[5]);
@@ -7468,7 +7471,7 @@ P _itemAttributeDeserializeProp<P>(
     case 1:
       return (reader.readDateTime(offset)) as P;
     case 2:
-      return (reader.readString(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 3:
       return (reader.readDateTime(offset)) as P;
     case 4:
@@ -7502,6 +7505,14 @@ extension ItemAttributeQueryWhereSort
   QueryBuilder<ItemAttribute, ItemAttribute, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
+    });
+  }
+
+  QueryBuilder<ItemAttribute, ItemAttribute, QAfterWhere> anyItemCode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'itemCode'),
+      );
     });
   }
 }
@@ -7577,48 +7588,95 @@ extension ItemAttributeQueryWhere
     });
   }
 
-  QueryBuilder<ItemAttribute, ItemAttribute, QAfterWhereClause> itemIdEqualTo(
-      String itemId) {
+  QueryBuilder<ItemAttribute, ItemAttribute, QAfterWhereClause> itemCodeEqualTo(
+      int itemCode) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'itemId',
-        value: [itemId],
+        indexName: r'itemCode',
+        value: [itemCode],
       ));
     });
   }
 
   QueryBuilder<ItemAttribute, ItemAttribute, QAfterWhereClause>
-      itemIdNotEqualTo(String itemId) {
+      itemCodeNotEqualTo(int itemCode) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'itemId',
+              indexName: r'itemCode',
               lower: [],
-              upper: [itemId],
+              upper: [itemCode],
               includeUpper: false,
             ))
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'itemId',
-              lower: [itemId],
+              indexName: r'itemCode',
+              lower: [itemCode],
               includeLower: false,
               upper: [],
             ));
       } else {
         return query
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'itemId',
-              lower: [itemId],
+              indexName: r'itemCode',
+              lower: [itemCode],
               includeLower: false,
               upper: [],
             ))
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'itemId',
+              indexName: r'itemCode',
               lower: [],
-              upper: [itemId],
+              upper: [itemCode],
               includeUpper: false,
             ));
       }
+    });
+  }
+
+  QueryBuilder<ItemAttribute, ItemAttribute, QAfterWhereClause>
+      itemCodeGreaterThan(
+    int itemCode, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'itemCode',
+        lower: [itemCode],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<ItemAttribute, ItemAttribute, QAfterWhereClause>
+      itemCodeLessThan(
+    int itemCode, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'itemCode',
+        lower: [],
+        upper: [itemCode],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<ItemAttribute, ItemAttribute, QAfterWhereClause> itemCodeBetween(
+    int lowerItemCode,
+    int upperItemCode, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'itemCode',
+        lower: [lowerItemCode],
+        includeLower: includeLower,
+        upper: [upperItemCode],
+        includeUpper: includeUpper,
+      ));
     });
   }
 }
@@ -7792,137 +7850,57 @@ extension ItemAttributeQueryFilter
   }
 
   QueryBuilder<ItemAttribute, ItemAttribute, QAfterFilterCondition>
-      itemIdEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      itemCodeEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'itemId',
+        property: r'itemCode',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<ItemAttribute, ItemAttribute, QAfterFilterCondition>
-      itemIdGreaterThan(
-    String value, {
+      itemCodeGreaterThan(
+    int value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'itemId',
+        property: r'itemCode',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<ItemAttribute, ItemAttribute, QAfterFilterCondition>
-      itemIdLessThan(
-    String value, {
+      itemCodeLessThan(
+    int value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'itemId',
+        property: r'itemCode',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<ItemAttribute, ItemAttribute, QAfterFilterCondition>
-      itemIdBetween(
-    String lower,
-    String upper, {
+      itemCodeBetween(
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'itemId',
+        property: r'itemCode',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ItemAttribute, ItemAttribute, QAfterFilterCondition>
-      itemIdStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'itemId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ItemAttribute, ItemAttribute, QAfterFilterCondition>
-      itemIdEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'itemId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ItemAttribute, ItemAttribute, QAfterFilterCondition>
-      itemIdContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'itemId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ItemAttribute, ItemAttribute, QAfterFilterCondition>
-      itemIdMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'itemId',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ItemAttribute, ItemAttribute, QAfterFilterCondition>
-      itemIdIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'itemId',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<ItemAttribute, ItemAttribute, QAfterFilterCondition>
-      itemIdIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'itemId',
-        value: '',
       ));
     });
   }
@@ -8439,15 +8417,16 @@ extension ItemAttributeQuerySortBy
     });
   }
 
-  QueryBuilder<ItemAttribute, ItemAttribute, QAfterSortBy> sortByItemId() {
+  QueryBuilder<ItemAttribute, ItemAttribute, QAfterSortBy> sortByItemCode() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'itemId', Sort.asc);
+      return query.addSortBy(r'itemCode', Sort.asc);
     });
   }
 
-  QueryBuilder<ItemAttribute, ItemAttribute, QAfterSortBy> sortByItemIdDesc() {
+  QueryBuilder<ItemAttribute, ItemAttribute, QAfterSortBy>
+      sortByItemCodeDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'itemId', Sort.desc);
+      return query.addSortBy(r'itemCode', Sort.desc);
     });
   }
 
@@ -8559,15 +8538,16 @@ extension ItemAttributeQuerySortThenBy
     });
   }
 
-  QueryBuilder<ItemAttribute, ItemAttribute, QAfterSortBy> thenByItemId() {
+  QueryBuilder<ItemAttribute, ItemAttribute, QAfterSortBy> thenByItemCode() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'itemId', Sort.asc);
+      return query.addSortBy(r'itemCode', Sort.asc);
     });
   }
 
-  QueryBuilder<ItemAttribute, ItemAttribute, QAfterSortBy> thenByItemIdDesc() {
+  QueryBuilder<ItemAttribute, ItemAttribute, QAfterSortBy>
+      thenByItemCodeDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'itemId', Sort.desc);
+      return query.addSortBy(r'itemCode', Sort.desc);
     });
   }
 
@@ -8653,10 +8633,9 @@ extension ItemAttributeQueryWhereDistinct
     });
   }
 
-  QueryBuilder<ItemAttribute, ItemAttribute, QDistinct> distinctByItemId(
-      {bool caseSensitive = true}) {
+  QueryBuilder<ItemAttribute, ItemAttribute, QDistinct> distinctByItemCode() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'itemId', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'itemCode');
     });
   }
 
@@ -8716,9 +8695,9 @@ extension ItemAttributeQueryProperty
     });
   }
 
-  QueryBuilder<ItemAttribute, String, QQueryOperations> itemIdProperty() {
+  QueryBuilder<ItemAttribute, int, QQueryOperations> itemCodeProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'itemId');
+      return query.addPropertyName(r'itemCode');
     });
   }
 
@@ -8991,12 +8970,10 @@ P _transactionDeserializeProp<P>(
 const _TransactionstatusEnumValueMap = {
   r'DUBE': r'DUBE',
   r'COMPLETED': r'COMPLETED',
-  r'CANCELLED': r'CANCELLED',
 };
 const _TransactionstatusValueEnumMap = {
   r'DUBE': TransactionStatus.DUBE,
   r'COMPLETED': TransactionStatus.COMPLETED,
-  r'CANCELLED': TransactionStatus.CANCELLED,
 };
 
 Id _transactionGetId(Transaction object) {
@@ -11101,10 +11078,10 @@ const TransactionLineSchema = CollectionSchema(
       name: r'discount',
       type: IsarType.double,
     ),
-    r'itemId': PropertySchema(
+    r'itemCode': PropertySchema(
       id: 2,
-      name: r'itemId',
-      type: IsarType.string,
+      name: r'itemCode',
+      type: IsarType.long,
     ),
     r'itemName': PropertySchema(
       id: 3,
@@ -11176,7 +11153,6 @@ int _transactionLineEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  bytesCount += 3 + object.itemId.length * 3;
   {
     final value = object.itemName;
     if (value != null) {
@@ -11195,7 +11171,7 @@ void _transactionLineSerialize(
 ) {
   writer.writeDateTime(offsets[0], object.createdAt);
   writer.writeDouble(offsets[1], object.discount);
-  writer.writeString(offsets[2], object.itemId);
+  writer.writeLong(offsets[2], object.itemCode);
   writer.writeString(offsets[3], object.itemName);
   writer.writeLong(offsets[4], object.lineNumber);
   writer.writeDouble(offsets[5], object.lineTotal);
@@ -11215,7 +11191,7 @@ TransactionLine _transactionLineDeserialize(
   object.createdAt = reader.readDateTime(offsets[0]);
   object.discount = reader.readDouble(offsets[1]);
   object.id = id;
-  object.itemId = reader.readString(offsets[2]);
+  object.itemCode = reader.readLong(offsets[2]);
   object.itemName = reader.readStringOrNull(offsets[3]);
   object.lineNumber = reader.readLong(offsets[4]);
   object.lineTotal = reader.readDouble(offsets[5]);
@@ -11238,7 +11214,7 @@ P _transactionLineDeserializeProp<P>(
     case 1:
       return (reader.readDouble(offset)) as P;
     case 2:
-      return (reader.readString(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 3:
       return (reader.readStringOrNull(offset)) as P;
     case 4:
@@ -11577,137 +11553,57 @@ extension TransactionLineQueryFilter
   }
 
   QueryBuilder<TransactionLine, TransactionLine, QAfterFilterCondition>
-      itemIdEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      itemCodeEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'itemId',
+        property: r'itemCode',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<TransactionLine, TransactionLine, QAfterFilterCondition>
-      itemIdGreaterThan(
-    String value, {
+      itemCodeGreaterThan(
+    int value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'itemId',
+        property: r'itemCode',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<TransactionLine, TransactionLine, QAfterFilterCondition>
-      itemIdLessThan(
-    String value, {
+      itemCodeLessThan(
+    int value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'itemId',
+        property: r'itemCode',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<TransactionLine, TransactionLine, QAfterFilterCondition>
-      itemIdBetween(
-    String lower,
-    String upper, {
+      itemCodeBetween(
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'itemId',
+        property: r'itemCode',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionLine, TransactionLine, QAfterFilterCondition>
-      itemIdStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'itemId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionLine, TransactionLine, QAfterFilterCondition>
-      itemIdEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'itemId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionLine, TransactionLine, QAfterFilterCondition>
-      itemIdContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'itemId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionLine, TransactionLine, QAfterFilterCondition>
-      itemIdMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'itemId',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionLine, TransactionLine, QAfterFilterCondition>
-      itemIdIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'itemId',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<TransactionLine, TransactionLine, QAfterFilterCondition>
-      itemIdIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'itemId',
-        value: '',
       ));
     });
   }
@@ -12349,16 +12245,17 @@ extension TransactionLineQuerySortBy
     });
   }
 
-  QueryBuilder<TransactionLine, TransactionLine, QAfterSortBy> sortByItemId() {
+  QueryBuilder<TransactionLine, TransactionLine, QAfterSortBy>
+      sortByItemCode() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'itemId', Sort.asc);
+      return query.addSortBy(r'itemCode', Sort.asc);
     });
   }
 
   QueryBuilder<TransactionLine, TransactionLine, QAfterSortBy>
-      sortByItemIdDesc() {
+      sortByItemCodeDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'itemId', Sort.desc);
+      return query.addSortBy(r'itemCode', Sort.desc);
     });
   }
 
@@ -12503,16 +12400,17 @@ extension TransactionLineQuerySortThenBy
     });
   }
 
-  QueryBuilder<TransactionLine, TransactionLine, QAfterSortBy> thenByItemId() {
+  QueryBuilder<TransactionLine, TransactionLine, QAfterSortBy>
+      thenByItemCode() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'itemId', Sort.asc);
+      return query.addSortBy(r'itemCode', Sort.asc);
     });
   }
 
   QueryBuilder<TransactionLine, TransactionLine, QAfterSortBy>
-      thenByItemIdDesc() {
+      thenByItemCodeDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'itemId', Sort.desc);
+      return query.addSortBy(r'itemCode', Sort.desc);
     });
   }
 
@@ -12631,10 +12529,10 @@ extension TransactionLineQueryWhereDistinct
     });
   }
 
-  QueryBuilder<TransactionLine, TransactionLine, QDistinct> distinctByItemId(
-      {bool caseSensitive = true}) {
+  QueryBuilder<TransactionLine, TransactionLine, QDistinct>
+      distinctByItemCode() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'itemId', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'itemCode');
     });
   }
 
@@ -12710,9 +12608,9 @@ extension TransactionLineQueryProperty
     });
   }
 
-  QueryBuilder<TransactionLine, String, QQueryOperations> itemIdProperty() {
+  QueryBuilder<TransactionLine, int, QQueryOperations> itemCodeProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'itemId');
+      return query.addPropertyName(r'itemCode');
     });
   }
 
@@ -14066,10 +13964,10 @@ const PriceHistorySchema = CollectionSchema(
       name: r'changedBy',
       type: IsarType.string,
     ),
-    r'itemId': PropertySchema(
+    r'itemCode': PropertySchema(
       id: 2,
-      name: r'itemId',
-      type: IsarType.string,
+      name: r'itemCode',
+      type: IsarType.long,
     ),
     r'newPrice': PropertySchema(
       id: 3,
@@ -14088,16 +13986,16 @@ const PriceHistorySchema = CollectionSchema(
   deserializeProp: _priceHistoryDeserializeProp,
   idName: r'id',
   indexes: {
-    r'itemId': IndexSchema(
-      id: -5342806140158601489,
-      name: r'itemId',
+    r'itemCode': IndexSchema(
+      id: -1692757059073837553,
+      name: r'itemCode',
       unique: false,
       replace: false,
       properties: [
         IndexPropertySchema(
-          name: r'itemId',
-          type: IndexType.hash,
-          caseSensitive: true,
+          name: r'itemCode',
+          type: IndexType.value,
+          caseSensitive: false,
         )
       ],
     )
@@ -14117,7 +14015,6 @@ int _priceHistoryEstimateSize(
 ) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.changedBy.length * 3;
-  bytesCount += 3 + object.itemId.length * 3;
   return bytesCount;
 }
 
@@ -14129,7 +14026,7 @@ void _priceHistorySerialize(
 ) {
   writer.writeDateTime(offsets[0], object.changedAt);
   writer.writeString(offsets[1], object.changedBy);
-  writer.writeString(offsets[2], object.itemId);
+  writer.writeLong(offsets[2], object.itemCode);
   writer.writeDouble(offsets[3], object.newPrice);
   writer.writeDouble(offsets[4], object.oldPrice);
 }
@@ -14144,7 +14041,7 @@ PriceHistory _priceHistoryDeserialize(
   object.changedAt = reader.readDateTime(offsets[0]);
   object.changedBy = reader.readString(offsets[1]);
   object.id = id;
-  object.itemId = reader.readString(offsets[2]);
+  object.itemCode = reader.readLong(offsets[2]);
   object.newPrice = reader.readDouble(offsets[3]);
   object.oldPrice = reader.readDouble(offsets[4]);
   return object;
@@ -14162,7 +14059,7 @@ P _priceHistoryDeserializeProp<P>(
     case 1:
       return (reader.readString(offset)) as P;
     case 2:
-      return (reader.readString(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 3:
       return (reader.readDouble(offset)) as P;
     case 4:
@@ -14190,6 +14087,14 @@ extension PriceHistoryQueryWhereSort
   QueryBuilder<PriceHistory, PriceHistory, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
+    });
+  }
+
+  QueryBuilder<PriceHistory, PriceHistory, QAfterWhere> anyItemCode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'itemCode'),
+      );
     });
   }
 }
@@ -14263,48 +14168,94 @@ extension PriceHistoryQueryWhere
     });
   }
 
-  QueryBuilder<PriceHistory, PriceHistory, QAfterWhereClause> itemIdEqualTo(
-      String itemId) {
+  QueryBuilder<PriceHistory, PriceHistory, QAfterWhereClause> itemCodeEqualTo(
+      int itemCode) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'itemId',
-        value: [itemId],
+        indexName: r'itemCode',
+        value: [itemCode],
       ));
     });
   }
 
-  QueryBuilder<PriceHistory, PriceHistory, QAfterWhereClause> itemIdNotEqualTo(
-      String itemId) {
+  QueryBuilder<PriceHistory, PriceHistory, QAfterWhereClause>
+      itemCodeNotEqualTo(int itemCode) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'itemId',
+              indexName: r'itemCode',
               lower: [],
-              upper: [itemId],
+              upper: [itemCode],
               includeUpper: false,
             ))
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'itemId',
-              lower: [itemId],
+              indexName: r'itemCode',
+              lower: [itemCode],
               includeLower: false,
               upper: [],
             ));
       } else {
         return query
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'itemId',
-              lower: [itemId],
+              indexName: r'itemCode',
+              lower: [itemCode],
               includeLower: false,
               upper: [],
             ))
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'itemId',
+              indexName: r'itemCode',
               lower: [],
-              upper: [itemId],
+              upper: [itemCode],
               includeUpper: false,
             ));
       }
+    });
+  }
+
+  QueryBuilder<PriceHistory, PriceHistory, QAfterWhereClause>
+      itemCodeGreaterThan(
+    int itemCode, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'itemCode',
+        lower: [itemCode],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<PriceHistory, PriceHistory, QAfterWhereClause> itemCodeLessThan(
+    int itemCode, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'itemCode',
+        lower: [],
+        upper: [itemCode],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<PriceHistory, PriceHistory, QAfterWhereClause> itemCodeBetween(
+    int lowerItemCode,
+    int upperItemCode, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'itemCode',
+        lower: [lowerItemCode],
+        includeLower: includeLower,
+        upper: [upperItemCode],
+        includeUpper: includeUpper,
+      ));
     });
   }
 }
@@ -14556,137 +14507,58 @@ extension PriceHistoryQueryFilter
     });
   }
 
-  QueryBuilder<PriceHistory, PriceHistory, QAfterFilterCondition> itemIdEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<PriceHistory, PriceHistory, QAfterFilterCondition>
+      itemCodeEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'itemId',
+        property: r'itemCode',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<PriceHistory, PriceHistory, QAfterFilterCondition>
-      itemIdGreaterThan(
-    String value, {
+      itemCodeGreaterThan(
+    int value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'itemId',
+        property: r'itemCode',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<PriceHistory, PriceHistory, QAfterFilterCondition>
-      itemIdLessThan(
-    String value, {
+      itemCodeLessThan(
+    int value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'itemId',
+        property: r'itemCode',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<PriceHistory, PriceHistory, QAfterFilterCondition> itemIdBetween(
-    String lower,
-    String upper, {
+  QueryBuilder<PriceHistory, PriceHistory, QAfterFilterCondition>
+      itemCodeBetween(
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'itemId',
+        property: r'itemCode',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<PriceHistory, PriceHistory, QAfterFilterCondition>
-      itemIdStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'itemId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<PriceHistory, PriceHistory, QAfterFilterCondition>
-      itemIdEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'itemId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<PriceHistory, PriceHistory, QAfterFilterCondition>
-      itemIdContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'itemId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<PriceHistory, PriceHistory, QAfterFilterCondition> itemIdMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'itemId',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<PriceHistory, PriceHistory, QAfterFilterCondition>
-      itemIdIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'itemId',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<PriceHistory, PriceHistory, QAfterFilterCondition>
-      itemIdIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'itemId',
-        value: '',
       ));
     });
   }
@@ -14856,15 +14728,15 @@ extension PriceHistoryQuerySortBy
     });
   }
 
-  QueryBuilder<PriceHistory, PriceHistory, QAfterSortBy> sortByItemId() {
+  QueryBuilder<PriceHistory, PriceHistory, QAfterSortBy> sortByItemCode() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'itemId', Sort.asc);
+      return query.addSortBy(r'itemCode', Sort.asc);
     });
   }
 
-  QueryBuilder<PriceHistory, PriceHistory, QAfterSortBy> sortByItemIdDesc() {
+  QueryBuilder<PriceHistory, PriceHistory, QAfterSortBy> sortByItemCodeDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'itemId', Sort.desc);
+      return query.addSortBy(r'itemCode', Sort.desc);
     });
   }
 
@@ -14931,15 +14803,15 @@ extension PriceHistoryQuerySortThenBy
     });
   }
 
-  QueryBuilder<PriceHistory, PriceHistory, QAfterSortBy> thenByItemId() {
+  QueryBuilder<PriceHistory, PriceHistory, QAfterSortBy> thenByItemCode() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'itemId', Sort.asc);
+      return query.addSortBy(r'itemCode', Sort.asc);
     });
   }
 
-  QueryBuilder<PriceHistory, PriceHistory, QAfterSortBy> thenByItemIdDesc() {
+  QueryBuilder<PriceHistory, PriceHistory, QAfterSortBy> thenByItemCodeDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'itemId', Sort.desc);
+      return query.addSortBy(r'itemCode', Sort.desc);
     });
   }
 
@@ -14983,10 +14855,9 @@ extension PriceHistoryQueryWhereDistinct
     });
   }
 
-  QueryBuilder<PriceHistory, PriceHistory, QDistinct> distinctByItemId(
-      {bool caseSensitive = true}) {
+  QueryBuilder<PriceHistory, PriceHistory, QDistinct> distinctByItemCode() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'itemId', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'itemCode');
     });
   }
 
@@ -15023,9 +14894,9 @@ extension PriceHistoryQueryProperty
     });
   }
 
-  QueryBuilder<PriceHistory, String, QQueryOperations> itemIdProperty() {
+  QueryBuilder<PriceHistory, int, QQueryOperations> itemCodeProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'itemId');
+      return query.addPropertyName(r'itemCode');
     });
   }
 

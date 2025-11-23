@@ -45,6 +45,10 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+flutter_intl:
+  enabled: true
+  arb_dir: lib/l10n # <--- Note: Some developers put it in lib/l10n
+  template_arb_file: app_en.arb
 
   # assets:
   #   - assets/images/

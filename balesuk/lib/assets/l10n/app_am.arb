@@ -1,0 +1,687 @@
+{
+    "@@locale": "am",
+    "appName": "ባለሱቅ",
+    "@appName": {
+        "description": "The name of the application."
+    },
+    "ok": "እሺ",
+    "@ok": {
+        "description": "General purpose confirmation button."
+    },
+    "cancel": "ይቅር",
+    "@cancel": {
+        "description": "General purpose cancellation button."
+    },
+    "save": "አስቀምጥ",
+    "@save": {
+        "description": "Button to save changes."
+    },
+    "delete": "ሰርዝ",
+    "@delete": {
+        "description": "Button to delete an item/record."
+    },
+    "edit": "አስተካክል",
+    "@edit": {
+        "description": "Button to edit an item/record."
+    },
+    "add": "አክል",
+    "@add": {
+        "description": "Button to add a new item/record."
+    },
+    "search": "ፈልግ",
+    "@search": {
+        "description": "The word 'Search'."
+    },
+    "close": "ዝጋ",
+    "@close": {
+        "description": "Action to close a modal or view."
+    },
+    "open": "ክፈት",
+    "@open": {
+        "description": "Action to open a modal or view."
+    },
+    "yes": "አዎ",
+    "@yes": {
+        "description": "Affirmative confirmation."
+    },
+    "no": "አይ",
+    "@no": {
+        "description": "Negative confirmation."
+    },
+    "back": "ተመለስ",
+    "@back": {
+        "description": "Button to go back to the previous screen."
+    },
+    "next": "ቀጣይ",
+    "@next": {
+        "description": "Button for the next step in a sequence."
+    },
+    "done": "ጨርሰዋል",
+    "@done": {
+        "description": "Button to signify completion."
+    },
+    "loading": "በመጫን ላይ...",
+    "@loading": {
+        "description": "Indicator text while data is loading."
+    },
+    "retry": "እንደገና ሞክር",
+    "@retry": {
+        "description": "Button to try an operation again."
+    },
+    "remove": "አጥፋ",
+    "@remove": {
+        "description": "Action to remove an item from a list (e.g., sale cart)."
+    },
+    "confirm": "አረጋግጥ",
+    "@confirm": {
+        "description": "Button to confirm an action."
+    },
+    "items": "እቃዎች",
+    "@items": {
+        "description": "Plural noun for products/goods."
+    },
+    "successGeneric": "በተሳካ ሁኔታ ተጠናቅቋል",
+    "@successGeneric": {
+        "description": "Generic message for any successful operation."
+    },
+    "itemSavedSuccess": "እቃው በተሳካ ሁኔታ ተቀምጧል",
+    "@itemSavedSuccess": {
+        "description": "Confirmation that a product item was saved."
+    },
+    "familySavedSuccess": "ቤተሰብ በተሳካ ሁኔታ ተቀምጧል",
+    "@familySavedSuccess": {
+        "description": "Confirmation that a product family was saved."
+    },
+    "transactionSavedSuccess": "ሽያጭ በተሳካ ሁኔታ ተቀምጧል",
+    "@transactionSavedSuccess": {
+        "description": "Confirmation that a sales transaction was saved."
+    },
+    "shopOpenedSuccess": "ሱቅ በተሳካ ሁኔታ ተከፈተ",
+    "@shopOpenedSuccess": {
+        "description": "Confirmation that the shop status was changed to open."
+    },
+    "shopClosedSuccess": "ሱቅ በተሳካ ሁኔታ ተዘግቷል",
+    "@shopClosedSuccess": {
+        "description": "Confirmation that the shop status was changed to closed."
+    },
+    "syncCompletedSuccess": "ማመሳሰል በተሳካ ሁኔታ ተጠናቅቋል",
+    "@syncCompletedSuccess": {
+        "description": "Confirmation that data synchronization was successful."
+    },
+    "setupCompletedSuccess": "ማዋቀር በተሳካ ሁኔታ ተጠናቅቋል",
+    "@setupCompletedSuccess": {
+        "description": "Confirmation that device setup was successful."
+    },
+    "transactionCompleted": "ግብይቱ በተሳካ ሁኔታ ተጠናቀቀ",
+    "@transactionCompleted": {
+        "description": "Confirmation that the entire sales transaction process finished."
+    },
+    "errorGeneric": "ስህተት ተፈጥሯል። እባክዎ እንደገና ይሞክሩ።",
+    "@errorGeneric": {
+        "description": "General catch-all error message."
+    },
+    "errorInvalidInput": "ልክ ያልሆነ ግቤት። እባክዎ ያረጋግጡ።",
+    "@errorInvalidInput": {
+        "description": "Error for incorrect data format in a form field."
+    },
+    "errorRequiredField": "ይህ ሜዳ ያስፈልጋል",
+    "@errorRequiredField": {
+        "description": "Error message for a missing mandatory field."
+    },
+    "errorItemNotFound": "እቃው አልተገኘም",
+    "@errorItemNotFound": {
+        "description": "Error when an item scan or lookup fails."
+    },
+    "errorInsufficientStock": "በቂ ዕቃ የለም",
+    "@errorInsufficientStock": {
+        "description": "Error when a sale exceeds available inventory."
+    },
+    "errorShopClosed": "ሱቅ ተዘግቷል። እባክዎ በመጀመሪያ ሱቁን ይክፈቱ።",
+    "@errorShopClosed": {
+        "description": "Error preventing sales when the shop status is closed."
+    },
+    "errorSyncFailed": "ማመሳሰል አልተሳካም። እባክዎ እንደገና ይሞክሩ።",
+    "@errorSyncFailed": {
+        "description": "Error indicating sync process did not finish successfully."
+    },
+    "errorNetworkConnection": "የኔትወርክ ግንኙነት ችግር",
+    "@errorNetworkConnection": {
+        "description": "Error indicating a lack of internet or local network access."
+    },
+    "errorDeviceNotFound": "መሣሪያ አልተገኘም",
+    "@errorDeviceNotFound": {
+        "description": "Error during sync when a target device cannot be located."
+    },
+    "errorPriceMismatch": "የዋጋ ልዩነት ተገኝቷል",
+    "@errorPriceMismatch": {
+        "description": "Error when prices differ between admin and user devices."
+    },
+    "errorUnknownItem": "ያልታወቀ እቃ ተገኝቷል",
+    "@errorUnknownItem": {
+        "description": "Error when an unrecognized item ID is processed."
+    },
+    "errorInvalidItemId": "ልክ ያልሆነ የእቃ መለያ: {itemId}",
+    "@errorInvalidItemId": {
+        "placeholders": {
+            "itemId": {
+                "description": "The invalid item ID that caused the error."
+            }
+        }
+    },
+    "errorSyncFailedUnknownItem": "ማመሳሰል አልተሳካም: ያልታወቀ እቃ {itemId} በግብይት {transactionId} ውስጥ",
+    "@errorSyncFailedUnknownItem": {
+        "placeholders": {
+            "itemId": {
+                "description": "The item ID that could not be synced."
+            },
+            "transactionId": {
+                "description": "The transaction ID containing the unknown item."
+            }
+        }
+    },
+    "selectDeviceMode": "የመሣሪያ ሁነታ ይምረጡ",
+    "@selectDeviceMode": {
+        "description": "Title for the initial device setup mode selection screen."
+    },
+    "modeSelectionDescription": "ይህንን መሳሪያ እንዴት መጠቀም እንደሚፈልጉ ይምረጡ። ይህ ቅንብር በኋላ መቀየር አይችሉም።",
+    "@modeSelectionDescription": {
+        "description": "Longer explanation of the device mode selection."
+    },
+    "adminMode": "አስተዳዳሪ",
+    "@adminMode": {
+        "description": "Label for the Admin device operating mode."
+    },
+    "userMode": "ተጠቃሚ",
+    "@userMode": {
+        "description": "Label for the User (sales staff) device operating mode."
+    },
+    "adminModeDescription": "ሙሉ መዳረሻ ወደ ዕቃ ዝርዝር፣ ሽያጭ እና ማመሳሰል አስተዳደር",
+    "@adminModeDescription": {
+        "description": "Description of the capabilities of the Admin mode."
+    },
+    "userModeDescription": "ሽያጭ መመዝገብ እና መረጃ ከአስተዳዳሪ መሳሪያ ማመሳሰል",
+    "@userModeDescription": {
+        "description": "Description of the capabilities of the User mode."
+    },
+    "shop": "ሱቅ",
+    "@shop": {
+        "description": "Noun for the business/store."
+    },
+    "shopStatus": "የሱቅ ሁኔታ",
+    "@shopStatus": {
+        "description": "Label for the current status of the shop (open/closed)."
+    },
+    "shopOpen": "ሱቅ ክፍት",
+    "@shopOpen": {
+        "description": "Status indicator when the shop is open."
+    },
+    "shopClosed": "ሱቅ ተዘግቷል",
+    "@shopClosed": {
+        "description": "Status indicator when the shop is closed."
+    },
+    "openShop": "ሱቅ ክፈት",
+    "@openShop": {
+        "description": "Action button to open the shop for business."
+    },
+    "closeShop": "ሱቅ ዝጋ",
+    "@closeShop": {
+        "description": "Action button to close the shop for the day."
+    },
+    "shopName": "የሱቅ ስም",
+    "@shopName": {
+        "description": "Field label for the shop's name."
+    },
+    "shopId": "የሱቅ መለያ",
+    "@shopId": {
+        "description": "Field label for the unique shop identifier."
+    },
+    "confirmCloseShop": "ሱቁን መዝጋት እርግጠኛ ነዎት?",
+    "@confirmCloseShop": {
+        "description": "Confirmation prompt before closing the shop."
+    },
+    "inventory": "ዕቃ ዝርዝር",
+    "@inventory": {
+        "description": "Main menu item for Inventory."
+    },
+    "inventoryManagement": "የዕቃ ዝርዝር አስተዳደር",
+    "@inventoryManagement": {
+        "description": "Title for the inventory section."
+    },
+    "totalFamilies": "ጠቅላላ ቤተሰቦች",
+    "@totalFamilies": {
+        "description": "Metric showing the total count of product families."
+    },
+    "totalItems": "ጠቅላላ እቃዎች",
+    "@totalItems": {
+        "description": "Metric showing the total count of individual products."
+    },
+    "totalValue": "ጠቅላላ ዋጋ",
+    "@totalValue": {
+        "description": "Metric showing the total monetary value of inventory."
+    },
+    "lowStock": "ዝቅተኛ አቅርቦት",
+    "@lowStock": {
+        "description": "Filter or warning for items with low stock."
+    },
+    "family": "ቤተሰብ",
+    "@family": {
+        "description": "Noun for a category or group of items."
+    },
+    "addFamily": "ቤተሰብ አክል",
+    "@addFamily": {
+        "description": "Action button to add a new product family."
+    },
+    "createFamily": "ቤተሰብ ፍጠር",
+    "@createFamily": {
+        "description": "Title or button to create a family."
+    },
+    "familyName": "የቤተሰብ ስም",
+    "@familyName": {
+        "description": "Field label for the name of the product family."
+    },
+    "familyDescription": "የቤተሰብ መግለጫ",
+    "@familyDescription": {
+        "description": "Field label for the description of the product family."
+    },
+    "item": "እቃ",
+    "@item": {
+        "description": "Singular noun for a product."
+    },
+    "addItem": "እቃ አክል",
+    "@addItem": {
+        "description": "Action button to add a new product item."
+    },
+    "createItem": "እቃ ፍጠር",
+    "@createItem": {
+        "description": "Title or button to create a product item."
+    },
+    "bulkCreateItems": "በብዛት እቃዎች ፍጠር",
+    "@bulkCreateItems": {
+        "description": "Action button to add multiple items at once."
+    },
+    "itemName": "የእቃ ስም",
+    "@itemName": {
+        "description": "Field label for the name of the product item."
+    },
+    "itemId": "የእቃ መለያ",
+    "@itemId": {
+        "description": "Field label for the unique item identifier (SKU/Barcode)."
+    },
+    "price": "ዋጋ",
+    "@price": {
+        "description": "Field label for the selling price."
+    },
+    "quantity": "ብዛት",
+    "@quantity": {
+        "description": "Field label for the stock quantity."
+    },
+    "minQuantity": "ዝቅተኛ ብዛት",
+    "@minQuantity": {
+        "description": "Field label for the minimum stock level warning."
+    },
+    "searchFamiliesOrItems": "ቤተሰቦችን ወይም እቃዎችን ፈልግ...",
+    "@searchFamiliesOrItems": {
+        "description": "Placeholder text for the inventory search bar."
+    },
+    "newSale": "አዲስ ሽያጭ",
+    "@newSale": {
+        "description": "Action button to start a fresh sales transaction."
+    },
+    "sales": "ሽያጮች",
+    "@sales": {
+        "description": "Main menu item for Sales (plural)."
+    },
+    "transaction": "ግብይት",
+    "@transaction": {
+        "description": "Singular noun for a sales transaction."
+    },
+    "transactions": "ግብይቶች",
+    "@transactions": {
+        "description": "Plural noun for sales transactions."
+    },
+    "transactionId": "የግብይት መለያ",
+    "@transactionId": {
+        "description": "Label for the unique transaction identifier."
+    },
+    "todayTransactions": "የዛሬ ግብይቶች",
+    "@todayTransactions": {
+        "description": "Label for transactions that occurred today."
+    },
+    "todaySales": "የዛሬ ሽያጮች",
+    "@todaySales": {
+        "description": "Label for the sales summary of the current day."
+    },
+    "total": "ጠቅላላ",
+    "@total": {
+        "description": "Label for the grand total amount."
+    },
+    "subtotal": "የበኩል ድምር",
+    "@subtotal": {
+        "description": "Label for the subtotal before taxes/discounts."
+    },
+    "unitPrice": "የአንድ ዋጋ",
+    "@unitPrice": {
+        "description": "Label for the price of a single unit."
+    },
+    "lineTotal": "የመስመር ድምር",
+    "@lineTotal": {
+        "description": "Label for the total price of an item line (unit price * quantity)."
+    },
+    "completed": "ተጠናቅቋል",
+    "@completed": {
+        "description": "Status indicator for a finished transaction."
+    },
+    "dube": "ዱቤ",
+    "@dube": {
+        "description": "Payment method/status indicating store credit or debt."
+    },
+    "debt": "ዕዳ",
+    "@debt": {
+        "description": "Financial term for money owed."
+    },
+    "credit": "ብድር",
+    "@credit": {
+        "description": "Financial term for money loaned."
+    },
+    "customerName": "የደንበኛ ስም",
+    "@customerName": {
+        "description": "Field label for the customer's name."
+    },
+    "customerPhone": "የደንበኛ ስልክ",
+    "@customerPhone": {
+        "description": "Field label for the customer's phone number."
+    },
+    "enterItemId": "የእቃ መለያ አስገባ",
+    "@enterItemId": {
+        "description": "Prompt to manually enter a product ID."
+    },
+    "scanItemId": "የእቃ መለያ ስካን",
+    "@scanItemId": {
+        "description": "Prompt to scan a product ID."
+    },
+    "confirmDeleteTransaction": "ይህን ግብይት መሰረዝ እርግጠኛ ነዎት?",
+    "@confirmDeleteTransaction": {
+        "description": "Confirmation prompt before deleting a sale."
+    },
+    "completeTransaction": "ግብይቱን አጠናቅቅ",
+    "@completeTransaction": {
+        "description": "Button to finalize and pay for the sale."
+    },
+    "sync": "ማመሳሰል",
+    "@sync": {
+        "description": "Main menu item for data synchronization."
+    },
+    "syncData": "መረጃ አመሳስል",
+    "@syncData": {
+        "description": "General action to sync data."
+    },
+    "syncHistory": "የማመሳሰል ታሪክ",
+    "@syncHistory": {
+        "description": "Title for the log of past sync operations."
+    },
+    "receiveFromDevices": "ከመሳሪያዎች ተቀበል",
+    "@receiveFromDevices": {
+        "description": "Action for Admin device to pull data from User devices."
+    },
+    "sendToAdmin": "ወደ አስተዳዳሪ ላክ",
+    "@sendToAdmin": {
+        "description": "Action for User device to push data to the Admin device."
+    },
+    "lastSync": "የመጨረሻ ማመሳሰል",
+    "@lastSync": {
+        "description": "Label indicating the timestamp of the last successful sync."
+    },
+    "syncNow": "አሁን አመሳስል",
+    "@syncNow": {
+        "description": "Action button to initiate synchronization immediately."
+    },
+    "selectDevice": "መሳሪያ ምረጥ",
+    "@selectDevice": {
+        "description": "Title or prompt to choose a device for sync."
+    },
+    "scanningDevices": "መሳሪያዎችን በመፈለግ ላይ...",
+    "@scanningDevices": {
+        "description": "Status indicator while searching for nearby devices."
+    },
+    "connectingToDevice": "ወደ መሳሪያ በመገናኘት ላይ...",
+    "@connectingToDevice": {
+        "description": "Status indicator while attempting to establish a connection."
+    },
+    "syncInProgress": "ማመሳሰል በሂደት ላይ...",
+    "@syncInProgress": {
+        "description": "Status indicator during the active sync process."
+    },
+    "syncCompletedTransactions": "{count} ግብይቶች በተሳካ ሁኔታ ተመሳስለዋል",
+    "@syncCompletedTransactions": {
+        "description": "Success message after syncing a number of transactions.",
+        "placeholders": {
+            "count": {
+                "description": "The number of transactions synced."
+            }
+        }
+    },
+    "setup": "ማዋቀር",
+    "@setup": {
+        "description": "Main menu item for device configuration."
+    },
+    "adminSetup": "የአስተዳዳሪ ማዋቀር",
+    "@adminSetup": {
+        "description": "Title for the Admin device configuration screen."
+    },
+    "userSetup": "የተጠቃሚ ማዋቀር",
+    "@userSetup": {
+        "description": "Title for the User device configuration screen."
+    },
+    "deviceId": "የመሳሪያ መለያ",
+    "@deviceId": {
+        "description": "Field label for the device's unique identifier."
+    },
+    "enterDeviceId": "የመሳሪያ መለያ አስገባ",
+    "@enterDeviceId": {
+        "description": "Prompt to enter the device ID."
+    },
+    "enterShopId": "የሱቅ መለያ አስገባ",
+    "@enterShopId": {
+        "description": "Prompt to enter the shop ID (used in User setup)."
+    },
+    "configureItemId": "የእቃ መለያ አወቃቀር",
+    "@configureItemId": {
+        "description": "Title for the screen configuring item ID format."
+    },
+    "familyDigits": "የቤተሰብ አሃዞች",
+    "@familyDigits": {
+        "description": "Field label for the number of digits reserved for the family code."
+    },
+    "itemDigits": "የእቃ አሃዞች",
+    "@itemDigits": {
+        "description": "Field label for the number of digits reserved for the item code."
+    },
+    "completeSetup": "ማዋቀሩን አጠናቅቅ",
+    "@completeSetup": {
+        "description": "Final button to finish the setup process."
+    },
+    "attributes": "ባህሪያት",
+    "@attributes": {
+        "description": "Title for product customization features."
+    },
+    "addAttribute": "ባህሪ አክል",
+    "@addAttribute": {
+        "description": "Action button to add a new product attribute."
+    },
+    "attributeName": "የባህሪ ስም",
+    "@attributeName": {
+        "description": "Field label for the name of the attribute."
+    },
+    "attributeType": "የባህሪ አይነት",
+    "@attributeType": {
+        "description": "Field label for the data type of the attribute."
+    },
+    "required": "ያስፈልጋል",
+    "@required": {
+        "description": "Label indicating a mandatory field/attribute."
+    },
+    "optional": "አማራጭ",
+    "@optional": {
+        "description": "Label indicating an optional field/attribute."
+    },
+    "fieldRequired": "{fieldName} ያስፈልጋል",
+    "@fieldRequired": {
+        "description": "Validation message indicating a specific field is empty.",
+        "placeholders": {
+            "fieldName": {
+                "description": "The name of the required field."
+            }
+        }
+    },
+    "fieldMustBe": "{fieldName} {condition} መሆን አለበት",
+    "@fieldMustBe": {
+        "description": "Validation message indicating a field does not meet a specific condition (e.g., 'a number').",
+        "placeholders": {
+            "fieldName": {},
+            "condition": {}
+        }
+    },
+    "mustBeGreaterThan": "{fieldName} ከ {value} በላይ መሆን አለበት",
+    "@mustBeGreaterThan": {
+        "description": "Validation message indicating a number must exceed a minimum value.",
+        "placeholders": {
+            "fieldName": {},
+            "value": {}
+        }
+    },
+    "today": "ዛሬ",
+    "@today": {
+        "description": "The word 'Today' for date selection/filtering."
+    },
+    "yesterday": "ትናንት",
+    "@yesterday": {
+        "description": "The word 'Yesterday' for date selection/filtering."
+    },
+    "date": "ቀን",
+    "@date": {
+        "description": "The word 'Date'."
+    },
+    "time": "ሰዓት",
+    "@time": {
+        "description": "The word 'Time'."
+    },
+    "errorDuplicateEntry": "ይህ ስም ቀደም ሲል አለ። ሌላ ይምረጡ።",
+    "@errorDuplicateEntry": {
+        "description": "Error message when a user tries to create an entry (like a Family name) that already exists."
+    },
+    "errorInvalidInputLength": "{fieldName} ከ {value} ቁምፊዎች ወይም ከዚያ በታች መሆን አለበት።",
+    "@errorInvalidInputLength": {
+        "description": "Validation error: Indicates a field's value exceeds a maximum length limit.",
+        "placeholders": {
+            "fieldName": {
+                "example": "የቤተሰብ ስም (Family Name)"
+            },
+            "value": {
+                "example": "100"
+            }
+        }
+    },
+    "familyHasActiveItems": "ይህ የዕቃ ቤተሰብ ንቁ ዕቃዎች አሉት። እባክዎ ዕቃዎቹን ቀድመው ይሰርዙ።",
+    "@familyHasActiveItems": {
+        "description": "Error message when a user attempts to delete an item family that still contains active items."
+    },
+    "familyDeletedSuccess": "የዕቃ ቤተሰብ በተሳካ ሁኔታ ተሰርዟል።",
+    "@familyDeletedSuccess": {
+        "description": "Success message confirming an item family has been deleted."
+    },
+    "itemDeletedSuccess": "ዕቃው በተሳካ ሁኔታ ተሰርዟል።",
+    "@itemDeletedSuccess": {
+        "description": "Success message confirming an item (product) has been deleted (soft deleted)."
+    },
+    "typeUpdatedSuccess": "{type} በተሳካ ሁኔታ ታድሷል።",
+    "@typeUpdatedSuccess": {
+        "placeholders": {
+            "type": {
+                "example": "ቤተሰብ"
+            }
+        },
+        "description": "Success message confirming a generic entity (e.g., Item, Family, SalesOrder) has been updated."
+    },
+    "emptyUpdateData": "{type} ለማደስ ምንም መረጃ አልተሰጠም። እባክዎ መቀየር የሚፈልጉትን መረጃ ያስገቡ።",
+    "@emptyUpdateData": {
+        "placeholders": {
+            "type": {
+                "example": "እቃ"
+            }
+        },
+        "description": "Validation error when an update DTO is empty or contains no meaningful changes."
+    },
+    "typeUpdateError": "{type} ለማደስ ሲሞከር ስህተት አጋጥሟል።",
+    "@typeUpdateError": {
+        "placeholders": {
+            "type": {
+                "example": "እቃ"
+            }
+        },
+        "description": "Generic error message when a specific entity fails to update."
+    },
+    "quantityExceedsStock": "የተጠየቀው ቅናሽ የአሁኑን ክምችት አልፏል። አሁን ያለ ክምችት፡ {stock}።",
+    "@quantityExceedsStock": {
+        "placeholders": {
+            "stock": {
+                "example": "100"
+            }
+        },
+        "description": "Business rule failure when an inventory adjustment would result in a negative quantity. Requires the currently available stock as a parameter."
+    },
+    "typeDeleteError": "{type} ለማጥፋት ሲሞከር ስህተት አጋጥሟል።",
+    "@typeDeleteError": {
+        "placeholders": {
+            "type": {
+                "example": "እቃ"
+            }
+        },
+        "description": "Generic error message when a specific entity fails to be deleted (soft delete failed)."
+    },
+    "errorRequiredSpecificField": "{fieldName} የሚለው መስክ ያስፈልጋል።",
+    "@errorRequiredSpecificField": {
+        "placeholders": {
+            "fieldName": {
+                "example": "የእቃ ስም"
+            }
+        },
+        "description": "Error message indicating that a specific field is required."
+    },
+    "notFoundWithId": "የ{id} መለያ ያለው {type} አልተገኘም።",
+    "@notFoundWithId": {
+        "placeholders": {
+             "id": {
+                "example": "SHOP12345"
+            },
+            "type": {
+                "example": "ሱቅ"
+            }
+        },
+        "description": "Error message indicating that a specific entity was not found."
+    },
+    "notFound": "{type} አልተገኘም።",
+    "@notFound": {
+        "placeholders": {
+            "type": {
+                "example": "እቃ"
+            }
+        },
+        "description": "Error message indicating that a specific entity was not found."
+    },
+    "errinvalidInputRange": "{fieldName} የሚለው እሴት በ{min} እና በ{max} መካከል መሆን አለበት።",
+    "@errinvalidInputRange": {
+        "placeholders": {
+            "fieldName": {
+                "example": "የእቃ ዋጋ"
+            },
+            "min": {
+                "example": "10"
+            },
+            "max": {
+                "example": "1000"
+            }
+        },
+        "description": "Validation error indicating a numeric field's value is outside the allowed range."
+    }
+
+}

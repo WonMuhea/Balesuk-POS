@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/* import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/themes/app_colors.dart';
@@ -243,7 +243,7 @@ class _NewSaleScreenState extends ConsumerState<NewSaleScreen> with LoggerMixin 
     
     try {
       // Search for item using IsarService
-      final item = await ref.read(isarServiceProvider).getItemById(itemId.trim());
+      final item = await ref.read(saleProvider.notifier).getItemById(itemId.trim());
       
       if (item == null) {
         if (mounted) {
@@ -822,4 +822,4 @@ class _CartItemCard extends StatelessWidget {
       ),
     );
   }
-}
+} */

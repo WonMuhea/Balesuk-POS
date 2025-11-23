@@ -1,4 +1,4 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+/* import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/utils/app_logger.dart';
 import '../../core/utils/result.dart';
 import '../../core/providers/providers.dart';
@@ -27,29 +27,31 @@ class CreateAttributeDefinitionDto {
   // Validation
   Result<void> validate() {
     if (name.trim().isEmpty) {
-      return Error(ValidationFailure('Attribute name is required'));
+      return const Error(ValidationFailure('Attribute name is required'));
     }
 
     if (name.length > 100) {
-      return Error(ValidationFailure('Attribute name must be 100 characters or less'));
+      return const Error(ValidationFailure('Attribute name must be 100 characters or less'));
     }
 
     if (dataType == AttributeDataType.DROPDOWN) {
       if (dropdownOptions == null || dropdownOptions!.isEmpty) {
-        return Error(ValidationFailure('Dropdown attributes must have options'));
+        return const Error(ValidationFailure('Dropdown attributes must have options'));
       }
 
       if (dropdownOptions!.any((opt) => opt.trim().isEmpty)) {
-        return Error(ValidationFailure('Dropdown options cannot be empty'));
+        return const Error(ValidationFailure('Dropdown options cannot be empty'));
       }
 
       if (dropdownOptions!.length != dropdownOptions!.toSet().length) {
-        return Error(ValidationFailure('Dropdown options must be unique'));
+        return const Error(ValidationFailure('Dropdown options must be unique'));
       }
     }
 
     return const Success(null);
   }
+
+  int get familyCode => int.parse(familyId);
 }
 
 class UpdateAttributeDefinitionDto {
@@ -76,6 +78,8 @@ class SaveItemAttributeDto {
     required this.attributeDefinitionId,
     required this.value,
   });
+
+  int get itemCode => int.parse(itemId);
 }
 
 // ==================== ATTRIBUTE REPOSITORY ====================
@@ -88,10 +92,10 @@ class AttributeRepository with LoggerMixin {
   // ==================== ATTRIBUTE DEFINITION OPERATIONS ====================
 
   /// Get attribute definitions for a family
-  Future<Result<List<AttributeDefinition>>> getDefinitionsByFamily(String familyId) async {
+  Future<Result<List<AttributeDefinition>>> getDefinitionsByFamily(String familyCode) async {
     try {
-      logInfo('Fetching attribute definitions for family: $familyId');
-      final definitions = await _isarService.getAttributesByFamily(familyId);
+      logInfo('Fetching attribute definitions for family: $familyCode');
+      final definitions = await _isarService.getAttributesByFamilyCode(int.parse(familyCode));
       logSuccess('Fetched ${definitions.length} attribute definitions');
       return Success(definitions);
     } catch (e, stack) {
@@ -134,7 +138,7 @@ class AttributeRepository with LoggerMixin {
       logInfo('Creating attribute definition: ${dto.name}');
 
       // Check for duplicate name in family
-      final existingDefs = await _isarService.getAttributesByFamily(dto.familyId);
+      final existingDefs = await _isarService.getAttributesByFamilyCode(dto.familyCode);
       final duplicate = existingDefs.any(
         (def) => def.name.toLowerCase() == dto.name.toLowerCase(),
       );
@@ -152,7 +156,7 @@ class AttributeRepository with LoggerMixin {
 
       // Create definition
       final definition = AttributeDefinition.create(
-        familyId: dto.familyId,
+        familyCode: dto.familyCode,
         name: dto.name.trim(),
         dataType: dto.dataType,
         isRequired: dto.isRequired,
@@ -188,10 +192,11 @@ class AttributeRepository with LoggerMixin {
   }) async {
     try {
       if (dtos.isEmpty) {
-        return Error(ValidationFailure('No attribute definitions to create'));
+        return const Error(ValidationFailure('No attribute definitions to create'));
       }
 
       logInfo('Bulk creating ${dtos.length} attribute definitions');
+      final familyCode = int.parse(familyId);
 
       // Validate all DTOs
       for (final dto in dtos) {
@@ -200,19 +205,19 @@ class AttributeRepository with LoggerMixin {
           return Error(validation.failureOrNull!);
         }
 
-        if (dto.familyId != familyId) {
-          return Error(ValidationFailure('All attributes must belong to the same family'));
+        if (dto.familyCode != familyCode ) {
+          return const Error(ValidationFailure('All attributes must belong to the same family'));
         }
       }
 
       // Check for duplicate names
       final names = dtos.map((d) => d.name.toLowerCase()).toList();
       if (names.length != names.toSet().length) {
-        return Error(ValidationFailure('Attribute names must be unique'));
+        return const Error(ValidationFailure('Attribute names must be unique'));
       }
 
       // Check for duplicates with existing attributes
-      final existingDefs = await _isarService.getAttributesByFamily(familyId);
+      final existingDefs = await _isarService.getAttributesByFamilyCode(familyCode);
       for (final dto in dtos) {
         final duplicate = existingDefs.any(
           (def) => def.name.toLowerCase() == dto.name.toLowerCase(),
@@ -227,7 +232,7 @@ class AttributeRepository with LoggerMixin {
       // Create definitions
       final definitions = dtos.asMap().entries.map((entry) {
         return AttributeDefinition.create(
-          familyId: familyId,
+          familyCode: familyCode,
           name: entry.value.name.trim(),
           dataType: entry.value.dataType,
           isRequired: entry.value.isRequired,
@@ -264,7 +269,7 @@ class AttributeRepository with LoggerMixin {
   ) async {
     try {
       if (!dto.hasUpdates) {
-        return Error(ValidationFailure('No updates provided'));
+        return const Error(ValidationFailure('No updates provided'));
       }
 
       logInfo('Updating attribute definition: $attributeId');
@@ -280,15 +285,15 @@ class AttributeRepository with LoggerMixin {
       // Validate updates
       if (dto.name != null) {
         if (dto.name!.trim().isEmpty) {
-          return Error(ValidationFailure('Attribute name cannot be empty'));
+          return const Error(ValidationFailure('Attribute name cannot be empty'));
         }
 
         if (dto.name!.length > 100) {
-          return Error(ValidationFailure('Attribute name must be 100 characters or less'));
+          return const Error(ValidationFailure('Attribute name must be 100 characters or less'));
         }
 
         // Check for duplicate name
-        final existingDefs = await _isarService.getAttributesByFamily(definition.familyId);
+        final existingDefs = await _isarService.getAttributesByFamilyCode(definition.familyCode);
         final duplicate = existingDefs.any(
           (def) => def.id != attributeId && def.name.toLowerCase() == dto.name!.toLowerCase(),
         );
@@ -300,15 +305,15 @@ class AttributeRepository with LoggerMixin {
 
       if (dto.dropdownOptions != null) {
         if (definition.dataType != AttributeDataType.DROPDOWN) {
-          return Error(BusinessRuleFailure('Cannot set dropdown options on non-dropdown attribute'));
+          return const Error(BusinessRuleFailure('Cannot set dropdown options on non-dropdown attribute'));
         }
 
         if (dto.dropdownOptions!.isEmpty) {
-          return Error(ValidationFailure('Dropdown must have at least one option'));
+          return const Error(ValidationFailure('Dropdown must have at least one option'));
         }
 
         if (dto.dropdownOptions!.any((opt) => opt.trim().isEmpty)) {
-          return Error(ValidationFailure('Dropdown options cannot be empty'));
+          return const Error(ValidationFailure('Dropdown options cannot be empty'));
         }
       }
 
@@ -369,7 +374,8 @@ class AttributeRepository with LoggerMixin {
   Future<Result<List<ItemAttribute>>> getAttributesByItem(String itemId) async {
     try {
       logInfo('Fetching attributes for item: $itemId');
-      final attributes = await _isarService.getAttributesByItem(itemId);
+      final itemCode = int.parse(itemId);
+      final attributes = await _isarService.getItemAttributesByCode(itemCode);
       logSuccess('Fetched ${attributes.length} attributes');
       return Success(attributes);
     } catch (e, stack) {
@@ -418,7 +424,7 @@ class AttributeRepository with LoggerMixin {
       }
 
       // Check if attribute already exists
-      final existingAttrs = await _isarService.getAttributesByItem(dto.itemId);
+      final existingAttrs = await _isarService.getItemAttributesByCode(dto.itemCode);
       final existing = existingAttrs.where(
         (a) => a.attributeDefinitionId == dto.attributeDefinitionId,
       ).firstOrNull;
@@ -437,7 +443,7 @@ class AttributeRepository with LoggerMixin {
       } else {
         // Create new
         attribute = ItemAttribute.create(
-          itemId: dto.itemId,
+          itemCode: dto.itemCode,
           attributeDefinitionId: dto.attributeDefinitionId,
           valueText: valueText,
           valueNumber: valueNumber,
@@ -472,7 +478,7 @@ class AttributeRepository with LoggerMixin {
       }
 
       logInfo('Bulk saving ${attributeValues.length} attributes for item: $itemId');
-
+      final itemCode = int.parse(itemId);
       final attributes = <ItemAttribute>[];
 
       for (final entry in attributeValues.entries) {
@@ -508,7 +514,7 @@ class AttributeRepository with LoggerMixin {
         }
 
         attributes.add(ItemAttribute.create(
-          itemId: itemId,
+          itemCode: itemCode,
           attributeDefinitionId: attributeId,
           valueText: valueText,
           valueNumber: valueNumber,
@@ -605,7 +611,7 @@ class AttributeRepository with LoggerMixin {
         if (value is! String) {
           return Error(ValidationFailure('${definition.name} must be text'));
         }
-        if (definition.isRequired && (value as String).trim().isEmpty) {
+        if (definition.isRequired && (value).trim().isEmpty) {
           return Error(ValidationFailure('${definition.name} cannot be empty'));
         }
         break;
@@ -689,4 +695,4 @@ class AttributeRepository with LoggerMixin {
 final attributeRepositoryProvider = Provider<AttributeRepository>((ref) {
   final isarService = ref.watch(isarServiceProvider);
   return AttributeRepository(isarService);
-});
+}); */
